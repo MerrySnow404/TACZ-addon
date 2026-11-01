@@ -18,10 +18,13 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackBlockEntity;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
+import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackLinkedStorageHostWrapper;
+import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageContentsPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPayload;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageStackLifecycle;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageEndpointStackState;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageEndpointData;
@@ -69,6 +72,20 @@ import java.util.function.Predicate;
  */
 public final class SophisticatedBackpacksIntegrationImpl
         implements SophisticatedBackpacksIntegration {
+
+    /** One traversal, with separate namespaces for ordinary storage and linked groups. */
+    static final class InventoryVisits {
+        private record Key(boolean linked, UUID id) {}
+        private final Set<Key> ids = new HashSet<>();
+        private final Set<IBackpackWrapper> anonymous = java.util.Collections.newSetFromMap(
+                new java.util.IdentityHashMap<>());
+
+        boolean first(IBackpackWrapper wrapper) {
+            return wrapper.getContentsUuid()
+                    .map(id -> ids.add(new Key(wrapper instanceof BackpackLinkedStorageHostWrapper, id)))
+                    .orElseGet(() -> anonymous.add(wrapper));
+        }
+    }
 
     private static final int MAX_AMMO_COUNT = 9999;
 
@@ -153,8 +170,8 @@ public final class SophisticatedBackpacksIntegrationImpl
         // Exercise the exact typed members used by bootstrap, without sending
         // packets or resolving a wrapper before its native snapshot exists.
         UUID probeId = new UUID(0L, 0L);
-        Objects.requireNonNull(new RequestBackpackInventoryContentsPayload(probeId).type());
-        Objects.requireNonNull(LinkedStorageRequestBridge.create(probeId, -1L).type());
+        Objects.requireNonNull(new RequestBackpackInventoryContentsPayload(probeId, new ItemStackReference(ItemStackReference.EQUIPMENT_HANDLER, 0, "main", "")).type());
+        Objects.requireNonNull(LinkedStorageRequestBridge.create(probeId, -1L, new ItemStackReference(ItemStackReference.EQUIPMENT_HANDLER, 0, "main", "")).type());
         Objects.requireNonNull(LinkedStorageStackLifecycle.classifyEndpoint(ItemStack.EMPTY));
         Objects.requireNonNull(LinkedStorageEndpointStackState.ENDPOINT);
         Objects.requireNonNull(new LinkedStorageEndpointData(probeId, probeId).groupId());
@@ -261,15 +278,14 @@ public final class SophisticatedBackpacksIntegrationImpl
     @Override
     public List<com.mafuyu404.taczaddon.common.RefitSource> resolveRefitSources(ServerPlayer player) {
         var result = new ArrayList<com.mafuyu404.taczaddon.common.RefitSource>();
-        Set<UUID> seen = new HashSet<>();
+        InventoryVisits seen = new InventoryVisits();
         bridge().forEachBackpack(player, (backpack, name, identifier, slot) -> {
             BackpackContext.Item context = new BackpackContext.Item(name, identifier, slot);
             if (!context.canInteractWith(player)) return false;
             IBackpackWrapper wrapper = context.getBackpackWrapper(player);
             if (wrapper == IBackpackWrapper.Noop.INSTANCE) return false;
             UUID id = wrapper.getContentsUuid().orElse(null);
-            UUID linked = getLinkedStorageGroupId(backpack);
-            if (id == null || !seen.add(linked == null ? id : linked)) return false;
+            if (id == null || !seen.first(wrapper)) return false;
             var handler = wrapper.getInventoryHandler();
             var locator = new com.mafuyu404.taczaddon.common.RefitSourceLocator(
                     player.level().dimension().location(), BlockPos.ZERO,
@@ -299,6 +315,7 @@ public final class SophisticatedBackpacksIntegrationImpl
         }
 
         boolean[] stopped = {false};
+        InventoryVisits seen = new InventoryVisits();
 
         bridge().forEachBackpack(
                 player,
@@ -313,7 +330,7 @@ public final class SophisticatedBackpacksIntegrationImpl
                     IBackpackWrapper wrapper =
                             context.getBackpackWrapper(player);
 
-                    if (wrapper == IBackpackWrapper.Noop.INSTANCE) {
+                    if (wrapper == IBackpackWrapper.Noop.INSTANCE || !seen.first(wrapper)) {
                         return false;
                     }
 
@@ -345,6 +362,7 @@ public final class SophisticatedBackpacksIntegrationImpl
         }
 
         boolean[] stopped = {false};
+        InventoryVisits seen = new InventoryVisits();
 
         bridge().forEachBackpack(
                 player,
@@ -363,7 +381,7 @@ public final class SophisticatedBackpacksIntegrationImpl
                     IBackpackWrapper wrapper =
                             context.getBackpackWrapper(player);
 
-                    if (wrapper == IBackpackWrapper.Noop.INSTANCE) {
+                    if (wrapper == IBackpackWrapper.Noop.INSTANCE || !seen.first(wrapper)) {
                         return false;
                     }
 
@@ -476,7 +494,10 @@ public final class SophisticatedBackpacksIntegrationImpl
             ServerPlayer player,
             IBackpackWrapper wrapper
     ) {
-        wrapper.getContentsUuid().ifPresent(uuid -> {
+        routeContentsSync(wrapper,
+                uuid -> PacketDistributor.sendToPlayer(player,
+                        LinkedStorageContentsPayload.createSnapshot(player.serverLevel(), uuid)),
+                uuid -> {
             CompoundTag backpackContents =
                     BackpackStorage.get()
                             .getOrCreateBackpackContents(uuid);
@@ -516,6 +537,11 @@ public final class SophisticatedBackpacksIntegrationImpl
                     )
             );
         });
+    }
+
+    static void routeContentsSync(IBackpackWrapper wrapper, Consumer<UUID> linked, Consumer<UUID> ordinary) {
+        wrapper.getContentsUuid().ifPresent(
+                wrapper instanceof BackpackLinkedStorageHostWrapper ? linked : ordinary);
     }
 
     @Override
@@ -603,10 +629,10 @@ public final class SophisticatedBackpacksIntegrationImpl
                     // A linked endpoint must never fall through to STORAGE_UUID,
                     // even when its endpoint data is transiently unavailable.
                     if (isLinkedStorageEndpoint(backpack)) {
-                        return requests.request(true, getLinkedStorageGroupId(backpack), backpack);
+                        return requests.request(true, getLinkedStorageGroupId(backpack), backpack, new ItemStackReference(ItemStackReference.EQUIPMENT_HANDLER, index, inventoryName, identifier));
                     }
                     return requests.request(false,
-                            backpack.get(ModCoreDataComponents.STORAGE_UUID.get()), backpack);
+                            backpack.get(ModCoreDataComponents.STORAGE_UUID.get()), backpack, new ItemStackReference(ItemStackReference.EQUIPMENT_HANDLER, index, inventoryName, identifier));
                 }
         );
     }
@@ -636,12 +662,12 @@ public final class SophisticatedBackpacksIntegrationImpl
         }
 
         /** Returns false in every case so the provider keeps visiting backpacks. */
-        boolean request(boolean linkedEndpoint, @javax.annotation.Nullable UUID id, ItemStack backpack) {
+        boolean request(boolean linkedEndpoint, @javax.annotation.Nullable UUID id, ItemStack backpack, ItemStackReference reference) {
             if (linkedEndpoint) {
                 if (id != null && requestedLinkedGroupIds.add(id)) {
                     // Upstream sends a snapshot unless knownRevision equals the
                     // group's revision. -1 forces bootstrap after native logout clear.
-                    sender.accept(LinkedStorageRequestBridge.create(id, -1L));
+                    sender.accept(LinkedStorageRequestBridge.create(id, -1L, reference));
                     com.mojang.logging.LogUtils.getLogger().debug(
                             "[taczaddon] Requested linked backpack contents group={} knownRevision=-1", id);
                 }
@@ -651,7 +677,7 @@ public final class SophisticatedBackpacksIntegrationImpl
                 // Register only the exact ordinary stack; do not initialize its
                 // InventoryHandler until BackpackStorage has native contents.
                 registerNormalWrapper.accept(backpack);
-                sender.accept(new RequestBackpackInventoryContentsPayload(id));
+                sender.accept(new RequestBackpackInventoryContentsPayload(id, reference));
                 com.mojang.logging.LogUtils.getLogger().debug(
                         "[taczaddon] Requested ordinary backpack contents storageUuid={}", id);
             }
@@ -798,7 +824,7 @@ public final class SophisticatedBackpacksIntegrationImpl
         InventoryHandler handler =
                 wrapper.getInventoryHandler();
 
-        if (player == null
+        if (wrapper instanceof BackpackLinkedStorageHostWrapper || player == null
                 || !player.level().isClientSide()) {
             return handler;
         }

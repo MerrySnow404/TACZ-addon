@@ -62,8 +62,9 @@
 
 - 兼容精妙背包与精妙存储，支持作为附近枪械工作台材料与改装配件来源；玩家携带的精妙背包还可作为弹药和改装配件来源。
 
-- 适配Create Storage 1.3.5 与Beyond Integration 0.6.5 ；开发验证使用Create 6.0.8与Beyond Dimensions 0.7.30。
+- 适配Create Storage 1.3.8 与Beyond Integration 0.7.1-fix ；开发验证使用Create 6.0.10与Beyond Dimensions 0.7.30。
 
 - 兼容Curios，可使用Curios槽位中的兼容弹药。
 
 - 第三人称瞄准兼容Shoulder Surfing Reloaded与Leawind's Third Person。
+- 依赖验证基线（2026-11-02）：Sophisticated Backpacks 3.26.19.2243、Core 1.5.23.2446、JEI 19.70.0.469、Curios 9.5.1、Shoulder Surfing 5.3.0。背包同步使用带实际库存位置的 ItemStackReference 新协议，旧协议版本不在此基线的兼容保证内。

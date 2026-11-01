@@ -6,13 +6,15 @@ import net.minecraft.world.item.Items;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsPayload;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.RequestLinkedStorageContentsPayload;
 import org.junit.jupiter.api.Test;
+import net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Exercises the production per-pass router with a recording native-payload sender. */
 class SophisticatedClientSyncRequestsTest {
+    private static final ItemStackReference REF = new ItemStackReference(ItemStackReference.EQUIPMENT_HANDLER, 4, "curios", "back");
     @Test void currentCorePayloadAndClientSyncContractAreAvailable() {
-        assertEquals("sophisticatedcore", new RequestLinkedStorageContentsPayload(new UUID(0, 1), -1L)
+        assertEquals("sophisticatedcore", new RequestLinkedStorageContentsPayload(new UUID(0, 1), -1L, REF)
                 .type().id().getNamespace());
         assertTrue(new SophisticatedBackpacksIntegrationImpl().probeClientSync());
     }
@@ -34,60 +36,60 @@ class SophisticatedClientSyncRequestsTest {
                 sent.add(payload);
                 com.mojang.logging.LogUtils.getLogger().info("Headless world bootstrap emitted {}", payload);
             }, registered::add);
-            assertFalse(requests.request(false, A, ItemStack.EMPTY));
-            assertFalse(requests.request(true, A, ItemStack.EMPTY));
-            assertFalse(requests.request(true, A, ItemStack.EMPTY));
+            assertFalse(requests.request(false, A, ItemStack.EMPTY, REF));
+            assertFalse(requests.request(true, A, ItemStack.EMPTY, REF));
+            assertFalse(requests.request(true, A, ItemStack.EMPTY, REF));
         }
-        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A),
-                new RequestLinkedStorageContentsPayload(A, -1L),
-                new RequestBackpackInventoryContentsPayload(A),
-                new RequestLinkedStorageContentsPayload(A, -1L)), sent);
+        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A, REF),
+                new RequestLinkedStorageContentsPayload(A, -1L, REF),
+                new RequestBackpackInventoryContentsPayload(A, REF),
+                new RequestLinkedStorageContentsPayload(A, -1L, REF)), sent);
     }
     @Test void ordinaryBackpackRequestsOnlyNormalContents() {
         ItemStack stack = new ItemStack(Items.LEATHER);
-        assertFalse(pass().request(false, A, stack));
-        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A)), sent);
+        assertFalse(pass().request(false, A, stack, REF));
+        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A, REF)), sent);
         assertEquals(List.of(stack), registered);
         assertSame(stack, registered.getFirst());
     }
     @Test void duplicateOrdinaryStorageRequestsOnce() {
         var pass = pass();
-        assertFalse(pass.request(false, A, ItemStack.EMPTY));
-        assertFalse(pass.request(false, A, ItemStack.EMPTY));
-        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A)), sent);
+        assertFalse(pass.request(false, A, ItemStack.EMPTY, REF));
+        assertFalse(pass.request(false, A, ItemStack.EMPTY, REF));
+        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A, REF)), sent);
         assertEquals(1, registered.size());
     }
     @Test void linkedEndpointRequestsOnlyLinkedContents() {
-        assertFalse(pass().request(true, A, ItemStack.EMPTY));
-        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L)), sent);
+        assertFalse(pass().request(true, A, ItemStack.EMPTY, REF));
+        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L, REF)), sent);
         assertTrue(registered.isEmpty());
     }
     @Test void duplicateLinkedGroupRequestsOnce() {
         var pass = pass();
-        assertFalse(pass.request(true, A, ItemStack.EMPTY));
-        assertFalse(pass.request(true, A, ItemStack.EMPTY));
-        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L)), sent);
+        assertFalse(pass.request(true, A, ItemStack.EMPTY, REF));
+        assertFalse(pass.request(true, A, ItemStack.EMPTY, REF));
+        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L, REF)), sent);
         assertTrue(registered.isEmpty());
     }
     @Test void equalUuidsRemainIndependentNamespaces() {
         var pass = pass();
-        assertFalse(pass.request(false, A, ItemStack.EMPTY));
-        assertFalse(pass.request(true, A, ItemStack.EMPTY));
-        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A),
-                new RequestLinkedStorageContentsPayload(A, -1L)), sent);
+        assertFalse(pass.request(false, A, ItemStack.EMPTY, REF));
+        assertFalse(pass.request(true, A, ItemStack.EMPTY, REF));
+        assertEquals(List.of(new RequestBackpackInventoryContentsPayload(A, REF),
+                new RequestLinkedStorageContentsPayload(A, -1L, REF)), sent);
     }
     @Test void missingEndpointDataSkipsStackAndContinuesEnumeration() {
         var pass = pass();
-        assertFalse(pass.request(true, null, ItemStack.EMPTY));
+        assertFalse(pass.request(true, null, ItemStack.EMPTY, REF));
         assertTrue(sent.isEmpty()); assertTrue(registered.isEmpty());
-        assertFalse(pass.request(false, A, ItemStack.EMPTY));
-        assertFalse(pass.request(true, A, ItemStack.EMPTY));
+        assertFalse(pass.request(false, A, ItemStack.EMPTY, REF));
+        assertFalse(pass.request(true, A, ItemStack.EMPTY, REF));
         assertEquals(2, sent.size());
     }
     @Test void subsequentWorldBootstrapRequestsFreshFullSnapshot() {
-        assertFalse(pass().request(true, A, ItemStack.EMPTY));
-        assertFalse(pass().request(true, A, ItemStack.EMPTY));
-        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L),
-                new RequestLinkedStorageContentsPayload(A, -1L)), sent);
+        assertFalse(pass().request(true, A, ItemStack.EMPTY, REF));
+        assertFalse(pass().request(true, A, ItemStack.EMPTY, REF));
+        assertEquals(List.of(new RequestLinkedStorageContentsPayload(A, -1L, REF),
+                new RequestLinkedStorageContentsPayload(A, -1L, REF)), sent);
     }
 }

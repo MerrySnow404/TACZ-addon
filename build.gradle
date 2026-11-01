@@ -65,6 +65,9 @@ configurations.matching { it.name in ['runtimeClasspath', 'testRuntimeClasspath'
         exclude group: 'maven.modrinth', module: '6zGxpbt7'
     }
     if (optionalMods == 'none') {
+        ['sophisticated-backpacks', 'sophisticated-core', 'jei', 'curios', 'shoulder-surfing-reloaded'].each {
+            exclude group: 'maven.modrinth', module: it
+        }
         ['sophisticated-backpacks-422301', 'sophisticated-core-618298', 'curios-309927', 'jei-238222',
          'shoulder-surfing-reloaded-243190', 'leawind-third-person-930880', 'perspective-api-1575322'].each {
             exclude group: 'curse.maven', module: it
@@ -136,26 +139,26 @@ configurations {
 
 dependencies {
     compileOnly "net.createmod.ponder:Ponder-NeoForge-1.21.1:1.0.64" // Runtime copy is bundled by Create
-    implementation "maven.modrinth:LNytGWDc:88L641Un" // Create 6.0.8, required by Create Storage
-    implementation "curse.maven:create-storage-neo-forge-1281770:8928251"
-    implementation "curse.maven:beyond-integration-1557405:8868605"
+    implementation "maven.modrinth:LNytGWDc:UjX6dr61" // Create 6.0.10, required by Create Storage
+    implementation "curse.maven:create-storage-neo-forge-1281770:9088348"
+    implementation "curse.maven:beyond-integration-1557405:9106101"
     implementation "maven.modrinth:6zGxpbt7:FP6mjH0z" // Beyond Dimensions 0.7.30
     implementation "curse.maven:tacz-1-21-1-1353462:9027337"
 
-    compileOnly "curse.maven:shoulder-surfing-reloaded-243190:8725628"
+    compileOnly "maven.modrinth:shoulder-surfing-reloaded:5380Ijsk"
 
 
-    implementation "curse.maven:sophisticated-backpacks-422301:9036628"
-    implementation "curse.maven:sophisticated-core-618298:9039572"
+    implementation "maven.modrinth:sophisticated-backpacks:4JH1U61x"
+    implementation "maven.modrinth:sophisticated-core:yIF7JvxG"
 
-    implementation "curse.maven:jei-238222:8829744"
-    implementation "curse.maven:curios-309927:6529130"
+    implementation "maven.modrinth:jei:1vC6z8wV"
+    implementation "maven.modrinth:curios:yohfFbgD"
     // 8602835 is Leawind 3.0.3-beta and requires this Perspective API at runtime.
     // The addon itself requires neither camera mod nor Perspective API.
     compileOnly "curse.maven:perspective-api-1575322:8595570"
     // Opt-in development matrix: none (default), shoulder, leawind, both.
     if (cameraMods in ['shoulder', 'both']) {
-        localRuntime "curse.maven:shoulder-surfing-reloaded-243190:8725628"
+        localRuntime "maven.modrinth:shoulder-surfing-reloaded:5380Ijsk"
     }
     if (cameraMods in ['leawind', 'both']) {
         localRuntime "curse.maven:leawind-third-person-930880:8602835"

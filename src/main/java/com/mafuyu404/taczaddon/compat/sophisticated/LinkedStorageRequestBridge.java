@@ -5,6 +5,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
+import net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference;
 
 /** Core now owns linked-storage requests; older Backpacks releases owned the same payload. */
 final class LinkedStorageRequestBridge {
@@ -18,9 +19,9 @@ final class LinkedStorageRequestBridge {
                 LinkedStorageRequestBridge.class.getClassLoader(), CORE, BACKPACKS);
     }
 
-    static CustomPacketPayload create(UUID id, long revision) {
+    static CustomPacketPayload create(UUID id, long revision, ItemStackReference reference) {
         try {
-            return Request.CONSTRUCTOR.newInstance(id, revision);
+            return Request.CONSTRUCTOR.newInstance(id, revision, reference);
         } catch (InvocationTargetException failure) {
             throw new SophisticatedCompatibilityException("Linked storage request failed", failure.getCause());
         } catch (ReflectiveOperationException failure) {
@@ -36,7 +37,7 @@ final class LinkedStorageRequestBridge {
             } catch (ClassNotFoundException absent) {
                 type = Class.forName(legacy, false, loader);
             }
-            return type.asSubclass(CustomPacketPayload.class).getConstructor(UUID.class, long.class);
+            return type.asSubclass(CustomPacketPayload.class).getConstructor(UUID.class, long.class, ItemStackReference.class);
         } catch (ReflectiveOperationException | ClassCastException failure) {
             throw new SophisticatedCompatibilityException("Unsupported linked storage request API", failure);
         }
