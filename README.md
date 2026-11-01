@@ -1,6 +1,6 @@
 # TaCZ addon
 
-知名枪械模组TaCZ的附属模组，本分支适用于 Minecraft 1.21.1 / NeoForge，功能如下：
+TaCZ 的附属模组，本分支适用于 NeoForge，提供枪械工作台、配件管理与弹药使用体验优化。
 
 ### 枪械工作台优化
 
@@ -24,7 +24,7 @@
 
 - 普通枪械改装界面可读取玩家携带的精妙背包、附近容器，以及通过附近方块通用接口暴露的存储网络库存中的适用配件，并直接安装、替换。替换下来的旧配件返回玩家物品栏，放不下时掉落。
 
-- 改装读取周边方块使用 NeoForge 通用物品接口，并回退到原版 Container；精妙背包方块通过独立联动访问。沿用附近容器扫描范围与开关；关闭周边读取不影响随身背包配件来源，不递归读取嵌套背包。
+- 周边配件读取沿用附近容器的扫描范围与开关；关闭周边读取不影响随身背包配件来源，不递归读取嵌套背包。
 
 - 可指定对配件按SHIFT时展示的支持枪械数量，避免遮挡屏幕与卡顿。
 
@@ -56,15 +56,16 @@
 
 ### 兼容性
 
-- 本分支基于非官方 NeoForge TaCZ 1.1.8-hotfix-r7 制作，暂无其他TaCZ版本兼容保证。metadata 不限定 TaCZ 和可选联动模组的版本范围，保留 Minecraft、NeoForge 与加载器的平台要求。
+- 需要安装 NeoForge 版 TaCZ。
 
-- JEI用于枪械工作台材料配方跳转。
+- JEI：支持从枪械工作台材料跳转到对应配方。
 
-- 兼容精妙背包与精妙存储，支持作为附近枪械工作台材料与改装配件来源；玩家携带的精妙背包还可作为弹药和改装配件来源。
+- 精妙背包与精妙存储：可作为附近枪械工作台材料与改装配件来源；随身精妙背包还可提供弹药与改装配件，链接背包按共享库存统计弹药。
 
-- 适配Create Storage 1.3.8 与Beyond Integration 0.7.1-fix ；开发验证使用Create 6.0.10与Beyond Dimensions 0.7.30。
+- Create Storage：支持随身背包、胸甲槽与 Curios 穿戴背包提供弹药，以及附近存储提供材料与配件。
 
-- 兼容Curios，可使用Curios槽位中的兼容弹药。
+- Beyond Integration 与 Beyond Dimensions：支持弹药网络联动；通过附近方块提供可访问库存的存储网络，也可作为工作台材料与改装配件来源。
 
-- 第三人称瞄准兼容Shoulder Surfing Reloaded与Leawind's Third Person。
-- 依赖验证基线（2026-11-02）：Sophisticated Backpacks 3.26.19.2243、Core 1.5.23.2446、JEI 19.70.0.469、Curios 9.5.1、Shoulder Surfing 5.3.0。背包同步使用带实际库存位置的 ItemStackReference 新协议，旧协议版本不在此基线的兼容保证内。
+- Curios：槽位中的兼容弹药可参与弹药检测与消耗。
+
+- Shoulder Surfing Reloaded 与 Leawind's Third Person：支持第三人称瞄准视角切换。
