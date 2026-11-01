@@ -83,12 +83,12 @@ class SophisticatedLinkedStorageArchitectureTest {
         String linked = method(sync, "if (linked.linked())");
         assertTrue(linked.contains("groupIdOptional()"));
         assertTrue(linked.contains(".filter(requestedLinkedGroups::add)"));
-        assertTrue(linked.contains(".ifPresent(SophisticatedLinkedStorageCompat::requestSnapshot)"));
+        assertTrue(linked.contains(".requestLocatedSnapshot(groupId,handlerName,identifier,slot,false)"));
         assertTrue(linked.contains("returnfalse;"));
         assertFalse(linked.contains("RequestBackpackInventoryContentsMessage"));
         String ordinary = sync.substring(sync.indexOf("newBackpackContext.Item("));
         assertTrue(ordinary.contains(".filter(requestedStorageUuids::add)"));
-        assertTrue(ordinary.contains("newRequestBackpackInventoryContentsMessage(uuid)"));
+        assertTrue(ordinary.contains("SophisticatedBackpackContentsRequest.create(uuid,handlerName,identifier,slot)"));
         assertFalse(ordinary.contains("requestSnapshot"));
         String impl = source("SophisticatedLinkedStorageCompat326");
         assertTrue(impl.contains("SophisticatedLinkedStorageCompatNetwork.request(groupId,-1L)"));

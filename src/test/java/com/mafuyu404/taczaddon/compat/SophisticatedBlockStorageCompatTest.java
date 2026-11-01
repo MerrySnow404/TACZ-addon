@@ -13,6 +13,11 @@ import java.util.jar.JarFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SophisticatedBlockStorageCompatTest {
+    @org.junit.jupiter.api.BeforeAll
+    static void bootstrapMinecraft() throws Exception {
+        com.mafuyu404.taczaddon.testutil.MinecraftTestBootstrap.prepare();
+    }
+
     @Test
     void separateEndpointsResolveTheSameGroupAndRelinkingChangesIdentity() {
         UUID group = UUID.randomUUID();
@@ -36,7 +41,7 @@ class SophisticatedBlockStorageCompatTest {
     @Test
     void publishedStorageImplementsTheCoreBlockEndpointContract() throws Exception {
         var path = CompatibilityFixtures.jar("sophisticated", "storage.current", "storage");
-        CompatibilityFixtures.requireVersion(path, "1.5.0.2137", "Sophisticated Storage");
+        CompatibilityFixtures.requireVersion(path, "1.5.13.2212", "Sophisticated Storage");
         try (var jar = new JarFile(path.toFile())) {
             ApiShapeProbe.ClassBytes source = name -> {
                 var entry = jar.getJarEntry(name.replace('.', '/') + ".class");

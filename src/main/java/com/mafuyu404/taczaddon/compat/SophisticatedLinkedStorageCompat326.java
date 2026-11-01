@@ -13,6 +13,13 @@ final class SophisticatedLinkedStorageCompat326
         implements SophisticatedLinkedStorageCompat.Bridge {
 
     @Override
+    public void requestLocatedSnapshot(UUID groupId, String handlerName, String identifier, int slot, boolean refresh) {
+        if (groupId == null) return;
+        long revision = refresh ? SophisticatedLinkedStorageCompatNetwork.getRevision(groupId).orElse(-1L) : -1L;
+        SophisticatedLinkedStorageCompatNetwork.request(groupId, revision, handlerName, identifier, slot);
+    }
+
+    @Override
     public SophisticatedLinkedStorageCompat.EndpointResolution
     resolve(
             ItemStack stack

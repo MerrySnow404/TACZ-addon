@@ -166,6 +166,10 @@ public enum SophisticatedBackpackGeneration {
     ) {
         for (Map.Entry<String, List<ApiShapeProbe.Member>> entry
                 : ORDINARY_BACKPACK_CONTRACT.entrySet()) {
+            if (entry.getKey().equals(REQUEST_CONTENTS_MESSAGE)) {
+                if (!SophisticatedBackpackContentsRequest.matches(source)) return false;
+                continue;
+            }
             if (!ApiShapeProbe.satisfies(
                     source,
                     entry.getKey(),

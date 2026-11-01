@@ -15,7 +15,6 @@ import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackStorage;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.common.gui.BackpackContext;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsMessage;
-import net.p3pp3rf1y.sophisticatedbackpacks.network.RequestBackpackInventoryContentsMessage;
 import net.p3pp3rf1y.sophisticatedbackpacks.network.SBPPacketHandler;
 import net.p3pp3rf1y.sophisticatedbackpacks.util.PlayerInventoryProvider;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
@@ -400,8 +399,8 @@ public final class SophisticatedBackpacksCompatInner {
                                                 requestedLinkedGroups::add
                                         )
                                         .ifPresent(
-                                                SophisticatedLinkedStorageCompat
-                                                        ::requestSnapshot
+                                                groupId -> SophisticatedLinkedStorageCompat
+                                                        .requestLocatedSnapshot(groupId, handlerName, identifier, slot, false)
                                         );
 
                                 /*
@@ -452,8 +451,8 @@ public final class SophisticatedBackpacksCompatInner {
                                     .ifPresent(uuid ->
                                             SBPPacketHandler.INSTANCE
                                                     .sendToServer(
-                                                            new RequestBackpackInventoryContentsMessage(
-                                                                    uuid
+                                                            SophisticatedBackpackContentsRequest.create(
+                                                                    uuid, handlerName, identifier, slot
                                                             )
                                                     )
                                     );
@@ -492,8 +491,8 @@ public final class SophisticatedBackpacksCompatInner {
                                             requestedLinkedGroups::add
                                     )
                                     .ifPresent(
-                                            SophisticatedLinkedStorageCompat
-                                                    ::refreshSnapshot
+                                            groupId -> SophisticatedLinkedStorageCompat
+                                                    .requestLocatedSnapshot(groupId, handlerName, identifier, slot, true)
                                     );
 
                             return false;

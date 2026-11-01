@@ -158,6 +158,10 @@ def allowMissingCompatibilityFixtures =
  * fixture is an explicit compatibility decision and should change this table.
  */
 def compatibilityFixtureSpecs = [
+        [group: "sophisticated", generation: "3.26.latest", kind: "backpacks",
+         version: "3.26.19.2239", artifact: "maven.modrinth:TyCTlI4b:VjliRs3R"],
+        [group: "sophisticated", generation: "3.26.latest", kind: "core",
+         version: "1.5.21.2444", artifact: "maven.modrinth:nmoqTijg:K4JBJmEV"],
         [group: "createstorage", generation: "1.2.7", kind: "storage",
          version: "1.2.7", artifact: "curse.maven:create-storage-neo-forge-1281770:8712044"],
         [group: "sophisticated", generation: "3.26.4", kind: "backpacks",
@@ -173,7 +177,7 @@ def compatibilityFixtureSpecs = [
         [group: "tacz", generation: "hotfix2", kind: "tacz",
          version: "1.1.8-hotfix2", artifact: "maven.modrinth:SzzJttH8:AzCBJlex"],
         [group: "sophisticated", generation: "storage.current", kind: "storage",
-         version: "1.5.0.2137", artifact: "maven.modrinth:hMlaZH8f:kR1FSEuq"],
+         version: "1.5.13.2212", artifact: "maven.modrinth:hMlaZH8f:EEqDW5P2"],
         // ---------------- Sophisticated 3.24 ordinary-only generations
 
         [
@@ -285,9 +289,9 @@ def compatibilityFixtureSpecs = [
                 group      : "shouldersurfing",
                 generation : "v5.current",
                 kind       : "shouldersurfing",
-                version    : "5.2.0",
+                version    : "5.3.0",
                 artifact   :
-                        "maven.modrinth:kepjj2sy:mswaiBSo"
+                        "maven.modrinth:kepjj2sy:Ylt5xlzc"
         ],
 
         // ---------------- Leawind generations
@@ -484,8 +488,8 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     /*
-    * Compile/test baseline: Sophisticated Backpacks 3.26.6.2176 +
-    * Sophisticated Core 1.5.4.2362.
+    * Compile/test baseline: Sophisticated Backpacks 3.26.19.2239 +
+    * Sophisticated Core 1.5.21.2444.
     *
     * Runtime metadata deliberately remains loader-tolerant for optional
     * dependency versions. Functional support is determined by structural
@@ -496,9 +500,9 @@ dependencies {
     * linked-storage generation, whose APIs must remain behind the lazy
     * optional bridge.
     */
-    implementation fg.deobf("maven.modrinth:nmoqTijg:XQog8w6A")
-    implementation fg.deobf("maven.modrinth:TyCTlI4b:1umN9rSN")
-    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:kR1FSEuq")
+    implementation fg.deobf("maven.modrinth:nmoqTijg:K4JBJmEV")
+    implementation fg.deobf("maven.modrinth:TyCTlI4b:VjliRs3R")
+    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:EEqDW5P2")
 
 
     implementation fg.deobf("maven.modrinth:SzzJttH8:AzCBJlex")
@@ -511,7 +515,7 @@ dependencies {
     runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-1.20.1:1.0.5")
     implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
 
-    implementation fg.deobf("maven.modrinth:kepjj2sy:mswaiBSo")
+    implementation fg.deobf("maven.modrinth:kepjj2sy:Ylt5xlzc")
     implementation fg.deobf("curse.maven:leawind-third-person-930880:8602826")
     compileOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
     runtimeOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
@@ -520,7 +524,7 @@ dependencies {
     implementation fg.deobf("curse.maven:rhino-416294:6186971")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
 
-    implementation fg.deobf("maven.modrinth:u6dRKJwZ:uyTkeINn")
+    implementation fg.deobf("maven.modrinth:u6dRKJwZ:6E4ps2ER")
 
     implementation fg.deobf("curse.maven:curios-309927:6418456")
 

@@ -29,15 +29,15 @@ class SophisticatedLinkedStorageNetworkTest {
     @TempDir Path temporary;
 
     @ParameterizedTest
-    @EnumSource(SophisticatedLinkedStorageCompatNetwork.Protocol.class)
+    @org.junit.jupiter.params.provider.MethodSource("protocols")
     void routesRequestsRevisionsAndSnapshotsThroughMatchingProtocol(
-            SophisticatedLinkedStorageCompatNetwork.Protocol protocol) throws Exception {
-        Map<String, byte[]> classes = compileProtocol(protocol);
+            SophisticatedLinkedStorageCompatNetwork.Protocol protocol, boolean located) throws Exception {
+        Map<String, byte[]> classes = compileProtocol(protocol, located);
         Set<String> loaded = new HashSet<>();
         ClassLoader loader = new ClassLoader(getClass().getClassLoader()) {
             @Override
             protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                if (!name.startsWith(ADAPTER) && !name.startsWith("net.p3pp3rf1y.sophisticated")) {
+                if (!name.startsWith(ADAPTER) && !name.startsWith(SophisticatedBackpackContentsRequest.class.getName()) && !name.startsWith("net.p3pp3rf1y.sophisticated")) {
                     return super.loadClass(name, resolve);
                 }
                 synchronized (getClassLoadingLock(name)) {
@@ -80,11 +80,23 @@ class SophisticatedLinkedStorageNetworkTest {
         assertEquals(group, snapshot.getClass().getMethod("groupId").invoke(snapshot));
 
         for (long revision : new long[]{-1, 0, 37, Long.MAX_VALUE}) {
-            invoke(adapter, "request", new Class<?>[]{UUID.class, long.class}, group, revision);
+            if (located) {
+                invoke(adapter, "request", new Class<?>[]{UUID.class, long.class, String.class, String.class, int.class},
+                        group, revision, "curios", "back", 2);
+            } else {
+                invoke(adapter, "request", new Class<?>[]{UUID.class, long.class}, group, revision);
+            }
             Object packet = handler.getField("lastServer").get(null);
             assertEquals(protocol.request, packet.getClass().getName());
             assertEquals(group, packet.getClass().getMethod("groupId").invoke(packet));
             assertEquals(revision, packet.getClass().getMethod("knownRevision").invoke(packet));
+            if (located) {
+                Object reference = packet.getClass().getMethod("itemReference").invoke(packet);
+                assertEquals(-2, reference.getClass().getMethod("containerId").invoke(reference));
+                assertEquals(2, reference.getClass().getMethod("slot").invoke(reference));
+                assertEquals("curios", reference.getClass().getMethod("handlerName").invoke(reference));
+                assertEquals("back", reference.getClass().getMethod("identifier").invoke(reference));
+            }
         }
 
         assertEquals(Optional.of(37L), invoke(adapter, "getRevision", new Class<?>[]{UUID.class}, group));
@@ -93,15 +105,34 @@ class SophisticatedLinkedStorageNetworkTest {
         cache.getField("revision").set(null, Optional.empty());
         assertEquals(Optional.empty(), invoke(adapter, "getRevision", new Class<?>[]{UUID.class}, group));
 
+        Class<?> ordinary = Class.forName(SophisticatedBackpackContentsRequest.class.getName(), true, loader);
+        Object ordinaryPacket = invoke(ordinary, "create", new Class<?>[]{UUID.class, String.class, String.class, int.class},
+                group, "curios", "back", 2);
+        assertEquals(group, ordinaryPacket.getClass().getMethod("uuid").invoke(ordinaryPacket));
+        if (located) {
+            Object reference = ordinaryPacket.getClass().getMethod("itemReference").invoke(ordinaryPacket);
+            assertEquals(-2, reference.getClass().getMethod("containerId").invoke(reference));
+            assertEquals(2, reference.getClass().getMethod("slot").invoke(reference));
+            assertEquals("curios", reference.getClass().getMethod("handlerName").invoke(reference));
+            assertEquals("back", reference.getClass().getMethod("identifier").invoke(reference));
+        }
         ApiShapeProbe.ClassBytes source = classes::get;
+        assertTrue(SophisticatedBackpackContentsRequest.matches(source));
         assertEquals(protocol, SophisticatedLinkedStorageCompatNetwork.Protocol.detect(source));
         classes.remove(protocol.request);
         assertThrows(LinkageError.class, () -> SophisticatedLinkedStorageCompatNetwork.Protocol.detect(source));
     }
 
-    private Map<String, byte[]> compileProtocol(SophisticatedLinkedStorageCompatNetwork.Protocol p)
+    static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> protocols() {
+        return java.util.stream.Stream.of(
+                org.junit.jupiter.params.provider.Arguments.of(SophisticatedLinkedStorageCompatNetwork.Protocol.BACKPACKS, false),
+                org.junit.jupiter.params.provider.Arguments.of(SophisticatedLinkedStorageCompatNetwork.Protocol.CORE, false),
+                org.junit.jupiter.params.provider.Arguments.of(SophisticatedLinkedStorageCompatNetwork.Protocol.CORE, true));
+    }
+
+    private Map<String, byte[]> compileProtocol(SophisticatedLinkedStorageCompatNetwork.Protocol p, boolean located)
             throws IOException {
-        Map<String, String> definitions = Map.of(
+        Map<String, String> definitions = new HashMap<>(Map.of(
                 p.request, "public record %s(java.util.UUID groupId, long knownRevision) {}",
                 p.snapshot, """
                         public record %s(java.util.UUID groupId) {
@@ -128,7 +159,15 @@ class SophisticatedLinkedStorageNetworkTest {
                             }
                         }
                         """
-        );
+        ));
+        if (located) {
+            definitions.put(p.request, "public record %s(java.util.UUID groupId, long knownRevision, net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference itemReference) {}");
+            definitions.put("net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference",
+                    "public record %s(int containerId, int slot, String handlerName, String identifier) { public static final int EQUIPMENT_HANDLER = -2; }");
+        }
+        definitions.put(SophisticatedBackpackContentsRequest.MESSAGE, located
+                ? "public record %s(java.util.UUID uuid, net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference itemReference) {}"
+                : "public record %s(java.util.UUID uuid) {}");
         var arguments = new ArrayList<>(java.util.List.of(
                 "-proc:none", "-classpath", System.getProperty("java.class.path"), "-d", temporary.toString()));
         for (var entry : definitions.entrySet()) {

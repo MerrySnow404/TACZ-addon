@@ -58,15 +58,15 @@ class SophisticatedCompatibilityArchitectureTest {
         String gradle = read("build.gradle");
         assertTrue(gradle.contains(
                 "implementation fg.deobf(\"maven.modrinth:"
-                        + "nmoqTijg:XQog8w6A\")"
+                        + "nmoqTijg:K4JBJmEV\")"
         ));
         assertTrue(gradle.contains(
                 "implementation fg.deobf(\"maven.modrinth:"
-                        + "TyCTlI4b:1umN9rSN\")"
+                        + "TyCTlI4b:VjliRs3R\")"
         ));
         assertTrue(gradle.contains(
                 "runtimeOnly fg.deobf(\"maven.modrinth:"
-                        + "hMlaZH8f:kR1FSEuq\")"
+                        + "hMlaZH8f:EEqDW5P2\")"
         ));
         assertFalse(gradle.contains(
                 "implementation fg.deobf(\"curse.maven:"

@@ -67,6 +67,8 @@ class SophisticatedBinaryFixtureTest {
      * declared by the corresponding Sophisticated Backpacks jar.
      */
     private static final List<Fixture> FIXTURES_BY_GENERATION = List.of(
+            new Fixture("3.26.19.2239", "3.26.latest",
+                    SophisticatedBackpackGeneration.LINKED_STORAGE),
             new Fixture("3.26.4.2172", "3.26.4",
                     SophisticatedBackpackGeneration.LINKED_STORAGE),
             new Fixture(
@@ -266,6 +268,7 @@ class SophisticatedBinaryFixtureTest {
                 == SophisticatedBackpackGeneration.LINKED_STORAGE) {
             assertEquals(
                     (fixture.generation().equals("3.26.current")
+                            || fixture.generation().equals("3.26.latest")
                             || fixture.generation().equals("3.26.4"))
                             ? SophisticatedLinkedStorageCompatNetwork.Protocol.CORE
                             : SophisticatedLinkedStorageCompatNetwork.Protocol.BACKPACKS,

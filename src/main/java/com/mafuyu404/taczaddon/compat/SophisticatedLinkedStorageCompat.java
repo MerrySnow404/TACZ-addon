@@ -118,6 +118,14 @@ final class SophisticatedLinkedStorageCompat {
                 && bridge != BrokenBridge.INSTANCE;
     }
 
+    static void requestLocatedSnapshot(UUID groupId, String handlerName, String identifier, int slot, boolean refresh) {
+        try {
+            BRIDGE.requestLocatedSnapshot(groupId, handlerName, identifier, slot, refresh);
+        } catch (LinkageError error) {
+            disableBrokenBridge(error);
+        }
+    }
+
     private static Bridge loadBridge() {
         /*
          * Detect the generation before touching any 3.26 class. A generation
@@ -206,6 +214,10 @@ final class SophisticatedLinkedStorageCompat {
     }
 
     interface Bridge {
+        default void requestLocatedSnapshot(UUID groupId, String handlerName, String identifier, int slot, boolean refresh) {
+            if (refresh) refreshSnapshot(groupId);
+            else requestSnapshot(groupId);
+        }
         EndpointResolution resolve(
                 ItemStack stack
         );

@@ -6,6 +6,7 @@ import com.mafuyu404.taczaddon.common.BackpackAmmoService;
 import com.mafuyu404.taczaddon.common.CuriosAmmoService;
 import com.mafuyu404.taczaddon.compat.BeyondIntegrationCompat;
 import com.mafuyu404.taczaddon.compat.CuriosCompat;
+import com.mafuyu404.taczaddon.compat.CreateStorageCompat;
 import com.mafuyu404.taczaddon.compat.SophisticatedBackpacksCompat;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
@@ -73,7 +74,10 @@ public class ModernKineticGunScriptAPIMixin {
          * re-checks its own usable state before the backend is called.
          */
         if (!(this.shooter instanceof ServerPlayer player)
-                || (!SophisticatedBackpacksCompat.isUsable() && !CuriosCompat.isUsable())) {
+                || (!SophisticatedBackpacksCompat.isUsable()
+                    && !CreateStorageCompat.isUsable()
+                    && !CuriosCompat.isUsable()
+                    && !BeyondIntegrationCompat.isUsable())) {
             return;
         }
 

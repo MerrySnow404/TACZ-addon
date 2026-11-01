@@ -12,6 +12,7 @@ import java.util.UUID;
 
 /** Adapts the linked-storage protocol moved from Backpacks to Core in Core 1.5.2. */
 final class SophisticatedLinkedStorageCompatNetwork {
+    private static final String REFERENCE = "net.p3pp3rf1y.sophisticatedcore.network.ItemStackReference";
     enum Protocol {
         CORE("net.p3pp3rf1y.sophisticatedcore.",
                 "linkedstorage.ClientLinkedStorageContents", "PacketHandler",
@@ -35,8 +36,13 @@ final class SophisticatedLinkedStorageCompatNetwork {
         boolean matches(ApiShapeProbe.ClassBytes source) {
             return ApiShapeProbe.satisfies(source, contents, List.of(
                     ApiShapeProbe.method("getRevision", "(Ljava/util/UUID;)Ljava/util/Optional;")))
-                    && ApiShapeProbe.satisfies(source, request, List.of(
+                    && (ApiShapeProbe.satisfies(source, request, List.of(
                     ApiShapeProbe.method("<init>", "(Ljava/util/UUID;J)V")))
+                    || (ApiShapeProbe.satisfies(source, request, List.of(
+                    ApiShapeProbe.method("<init>", "(Ljava/util/UUID;JL" + REFERENCE.replace('.', '/') + ";)V")))
+                    && ApiShapeProbe.satisfies(source, REFERENCE, List.of(
+                    ApiShapeProbe.method("<init>", "(IILjava/lang/String;Ljava/lang/String;)V"),
+                    ApiShapeProbe.field("EQUIPMENT_HANDLER", "I")))))
                     && ApiShapeProbe.satisfies(source, snapshot, List.of(
                     ApiShapeProbe.method("createSnapshot", "(Lnet/minecraft/server/level/ServerLevel;"
                             + "Ljava/util/UUID;)L" + snapshot.replace('.', '/') + ";")))
@@ -61,6 +67,8 @@ final class SophisticatedLinkedStorageCompatNetwork {
         static final Protocol PROTOCOL = Protocol.detect(
                 ApiShapeProbe.sourceFor(SophisticatedLinkedStorageCompatNetwork.class));
         static final Constructor<?> REQUEST;
+        static final Constructor<?> ITEM_REFERENCE;
+        static final int EQUIPMENT;
         static final Method SNAPSHOT;
         static final Method SEND_SERVER;
         static final Method SEND_CLIENT;
@@ -69,7 +77,20 @@ final class SophisticatedLinkedStorageCompatNetwork {
         static {
             try {
                 Class<?> handler = load(PROTOCOL.handler);
-                REQUEST = load(PROTOCOL.request).getConstructor(UUID.class, long.class);
+                Constructor<?> request;
+                Constructor<?> reference = null;
+                int equipment = 0;
+                try {
+                    request = load(PROTOCOL.request).getConstructor(UUID.class, long.class);
+                } catch (NoSuchMethodException modern) {
+                    Class<?> type = load(REFERENCE);
+                    reference = type.getConstructor(int.class, int.class, String.class, String.class);
+                    equipment = type.getField("EQUIPMENT_HANDLER").getInt(null);
+                    request = load(PROTOCOL.request).getConstructor(UUID.class, long.class, type);
+                }
+                REQUEST = request;
+                ITEM_REFERENCE = reference;
+                EQUIPMENT = equipment;
                 SNAPSHOT = load(PROTOCOL.snapshot).getMethod("createSnapshot", ServerLevel.class, UUID.class);
                 SEND_SERVER = handler.getMethod("sendToServer", Object.class);
                 SEND_CLIENT = handler.getMethod("sendToClient", ServerPlayer.class, Object.class);
@@ -100,8 +121,20 @@ final class SophisticatedLinkedStorageCompatNetwork {
     }
 
     static void request(UUID groupId, long revision) {
+        request(groupId, revision, null, null, -1);
+    }
+
+    static void request(UUID groupId, long revision, String handlerName, String identifier, int slot) {
         try {
-            Object message = Network.REQUEST.newInstance(groupId, revision);
+            Object message;
+            if (Network.ITEM_REFERENCE == null) {
+                message = Network.REQUEST.newInstance(groupId, revision);
+            } else {
+                // New servers require proof of a carried endpoint; never send a null reference.
+                if (handlerName == null || identifier == null || slot < 0) return;
+                Object reference = Network.ITEM_REFERENCE.newInstance(Network.EQUIPMENT, slot, handlerName, identifier);
+                message = Network.REQUEST.newInstance(groupId, revision, reference);
+            }
             invoke(Network.SEND_SERVER, Network.HANDLER, message);
         } catch (ReflectiveOperationException error) {
             throw linkage(error);
