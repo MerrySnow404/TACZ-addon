@@ -1,13 +1,16 @@
 package com.mafuyu404.taczaddon.compat;
 
 import com.mafuyu404.taczaddon.TACZaddon;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IJeiRuntime;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -38,15 +41,28 @@ public class JeiPlugin implements IModPlugin {
 
     public static boolean showRecipes(ItemStack itemStack) {
         final boolean[] result = {false};
-        JeiPlugin.getJeiRuntime().ifPresent(jeiRuntime -> {
-            jeiRuntime.getIngredientManager().getIngredientTypeChecked(itemStack)
-                .ifPresent(type -> {
-                    jeiRuntime.getRecipesGui().show(
-                        jeiRuntime.getJeiHelpers().getFocusFactory().createFocus(RecipeIngredientRole.OUTPUT, type, itemStack)
-                    );
-                    result[0] = true;
-                });
-        });
+        JeiPlugin.getJeiRuntime()
+                .ifPresent(
+                        jeiRuntime -> {
+                            jeiRuntime
+                                    .getIngredientManager()
+                                    .getIngredientTypeChecked(itemStack)
+                                    .ifPresent(
+                                            type -> {
+                                                jeiRuntime
+                                                        .getRecipesGui()
+                                                        .show(
+                                                                jeiRuntime
+                                                                        .getJeiHelpers()
+                                                                        .getFocusFactory()
+                                                                        .createFocus(
+                                                                                RecipeIngredientRole
+                                                                                        .OUTPUT,
+                                                                                type,
+                                                                                itemStack));
+                                                result[0] = true;
+                                            });
+                        });
         return result[0];
     }
 }

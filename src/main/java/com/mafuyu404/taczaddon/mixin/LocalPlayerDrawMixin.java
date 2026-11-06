@@ -1,7 +1,8 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.config.ClientSyncedConfig;
 import com.tacz.guns.client.gameplay.LocalPlayerDraw;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

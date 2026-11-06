@@ -1,22 +1,22 @@
 package com.mafuyu404.taczaddon.compat.sophisticated;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 /**
- * Structural bridge tests: the reflective
- * {@code runOnBackpacks} lookup must accept both the historical
- * {@code void}-returning and the current {@code boolean}-returning ABI
- * without branching on the return type.
+ * Structural bridge tests: the reflective {@code runOnBackpacks} lookup must accept both the
+ * historical {@code void}-returning and the current {@code boolean}-returning ABI without branching
+ * on the return type.
  */
 class PlayerInventoryProviderBridgeTest {
 
@@ -24,9 +24,7 @@ class PlayerInventoryProviderBridgeTest {
     void bridgeAcceptsVoidReturningProvider() {
         List<String> visits = new ArrayList<>();
 
-        PlayerInventoryProviderBridge bridge = newBridge(
-                VoidReturningProvider.class
-        );
+        PlayerInventoryProviderBridge bridge = newBridge(VoidReturningProvider.class);
         bridge.forEachBackpack(null, visitor(visits));
 
         assertEquals(2, visits.size());
@@ -38,9 +36,7 @@ class PlayerInventoryProviderBridgeTest {
     void bridgeAcceptsBooleanReturningProvider() {
         List<String> visits = new ArrayList<>();
 
-        PlayerInventoryProviderBridge bridge = newBridge(
-                BooleanReturningProvider.class
-        );
+        PlayerInventoryProviderBridge bridge = newBridge(BooleanReturningProvider.class);
         bridge.forEachBackpack(null, visitor(visits));
 
         assertEquals(2, visits.size());
@@ -50,21 +46,17 @@ class PlayerInventoryProviderBridgeTest {
 
     @Test
     void linkageErrorFromVisitorPropagatesToGuard() {
-        PlayerInventoryProviderBridge bridge = newBridge(
-                VoidReturningProvider.class
-        );
+        PlayerInventoryProviderBridge bridge = newBridge(VoidReturningProvider.class);
 
         assertThrows(
                 NoSuchMethodError.class,
-                () -> bridge.forEachBackpack(
-                        null,
-                        (backpack, name, id, slot) -> {
-                            throw new NoSuchMethodError(
-                                    "runOnBackpacks(Player, Consumer)V"
-                            );
-                        }
-                )
-        );
+                () ->
+                        bridge.forEachBackpack(
+                                null,
+                                (backpack, name, id, slot) -> {
+                                    throw new NoSuchMethodError(
+                                            "runOnBackpacks(Player, Consumer)V");
+                                }));
     }
 
     @Test
@@ -72,16 +64,9 @@ class PlayerInventoryProviderBridgeTest {
         SophisticatedCompatibilityException exception =
                 assertThrows(
                         SophisticatedCompatibilityException.class,
-                        () -> newBridge(
-                                WrongIdentifierTypeProvider.class
-                        )
-                );
+                        () -> newBridge(WrongIdentifierTypeProvider.class));
 
-        assertTrue(
-                exception.getMessage().contains(
-                        "PlayerInventoryProvider bridge contract"
-                )
-        );
+        assertTrue(exception.getMessage().contains("PlayerInventoryProvider bridge contract"));
     }
 
     @Test
@@ -89,16 +74,9 @@ class PlayerInventoryProviderBridgeTest {
         SophisticatedCompatibilityException exception =
                 assertThrows(
                         SophisticatedCompatibilityException.class,
-                        () -> newBridge(
-                                WrongConsumerReturnProvider.class
-                        )
-                );
+                        () -> newBridge(WrongConsumerReturnProvider.class));
 
-        assertTrue(
-                exception.getMessage().contains(
-                        "unexpected return type"
-                )
-        );
+        assertTrue(exception.getMessage().contains("unexpected return type"));
     }
 
     @Test
@@ -106,44 +84,34 @@ class PlayerInventoryProviderBridgeTest {
         SophisticatedCompatibilityException exception =
                 assertThrows(
                         SophisticatedCompatibilityException.class,
-                        () -> newBridge(
-                                WrongRunReturnProvider.class
-                        )
-                );
+                        () -> newBridge(WrongRunReturnProvider.class));
 
-        assertTrue(
-                exception.getMessage().contains(
-                        "unsupported return type"
-                )
-        );
+        assertTrue(exception.getMessage().contains("unsupported return type"));
     }
 
-    private static PlayerInventoryProviderBridge newBridge(
-            Class<?> providerFixture
-    ) {
+    private static PlayerInventoryProviderBridge newBridge(Class<?> providerFixture) {
         return new PlayerInventoryProviderBridge(
                 PlayerInventoryProviderBridgeTest.class.getClassLoader(),
-                providerFixture.getName()
-        );
+                providerFixture.getName());
     }
 
-    private static PlayerInventoryProviderBridge.BackpackVisitor visitor(
-            List<String> visits
-    ) {
+    private static PlayerInventoryProviderBridge.BackpackVisitor visitor(List<String> visits) {
         return (backpack, inventoryName, identifier, slot) -> {
             visits.add(
                     inventoryName
-                            + "|" + identifier
-                            + "|" + slot
-                            + "|" + backpack.getItem().toString()
-            );
+                            + "|"
+                            + identifier
+                            + "|"
+                            + slot
+                            + "|"
+                            + backpack.getItem().toString());
             return false;
         };
     }
 
     /**
-     * Structural stand-in for Sophisticated Backpacks &lt;= 3.25.x whose
-     * {@code runOnBackpacks} returns void.
+     * Structural stand-in for Sophisticated Backpacks &lt;= 3.25.x whose {@code runOnBackpacks}
+     * returns void.
      */
     static final class VoidReturningProvider {
 
@@ -151,37 +119,20 @@ class PlayerInventoryProviderBridgeTest {
             return new VoidReturningProvider();
         }
 
-        public void runOnBackpacks(
-                Player player,
-                BackpackInventorySlotConsumer consumer
-        ) {
-            consumer.accept(
-                    new ItemStack(Items.STONE),
-                    "main",
-                    "uuid-void",
-                    0
-            );
-            consumer.accept(
-                    new ItemStack(Items.DIRT),
-                    "offhand",
-                    "uuid-void",
-                    1
-            );
+        public void runOnBackpacks(Player player, BackpackInventorySlotConsumer consumer) {
+            consumer.accept(new ItemStack(Items.STONE), "main", "uuid-void", 0);
+            consumer.accept(new ItemStack(Items.DIRT), "offhand", "uuid-void", 1);
         }
 
         public interface BackpackInventorySlotConsumer {
             boolean accept(
-                    ItemStack backpack,
-                    String inventoryHandlerName,
-                    String identifier,
-                    int slot
-            );
+                    ItemStack backpack, String inventoryHandlerName, String identifier, int slot);
         }
     }
 
     /**
-     * Structural stand-in for Sophisticated Backpacks 3.26.x whose
-     * {@code runOnBackpacks} returns boolean.
+     * Structural stand-in for Sophisticated Backpacks 3.26.x whose {@code runOnBackpacks} returns
+     * boolean.
      */
     static final class BooleanReturningProvider {
 
@@ -189,46 +140,29 @@ class PlayerInventoryProviderBridgeTest {
             return new BooleanReturningProvider();
         }
 
-        public boolean runOnBackpacks(
-                Player player,
-                BackpackInventorySlotConsumer consumer
-        ) {
-            boolean first = consumer.accept(
-                    new ItemStack(Items.STONE),
-                    "main",
-                    "uuid-bool",
-                    0
-            );
-            boolean second = consumer.accept(
-                    new ItemStack(Items.DIRT),
-                    "offhand",
-                    "uuid-bool",
-                    1
-            );
+        public boolean runOnBackpacks(Player player, BackpackInventorySlotConsumer consumer) {
+            boolean first = consumer.accept(new ItemStack(Items.STONE), "main", "uuid-bool", 0);
+            boolean second = consumer.accept(new ItemStack(Items.DIRT), "offhand", "uuid-bool", 1);
             return first || second;
         }
 
         public interface BackpackInventorySlotConsumer {
             boolean accept(
-                    ItemStack backpack,
-                    String inventoryHandlerName,
-                    String identifier,
-                    int slot
-            );
+                    ItemStack backpack, String inventoryHandlerName, String identifier, int slot);
         }
     }
 
     /**
      * Simulates a future Sophisticated version changing:
      *
-     * accept(ItemStack, String, String, int)
+     * <p>accept(ItemStack, String, String, int)
      *
-     * into:
+     * <p>into:
      *
-     * accept(ItemStack, String, Object, int)
+     * <p>accept(ItemStack, String, Object, int)
      *
-     * The bridge must reject this during construction instead of discovering it
-     * later through a ClassCastException on a client tick.
+     * <p>The bridge must reject this during construction instead of discovering it later through a
+     * ClassCastException on a client tick.
      */
     static final class WrongIdentifierTypeProvider {
 
@@ -236,50 +170,32 @@ class PlayerInventoryProviderBridgeTest {
             return new WrongIdentifierTypeProvider();
         }
 
-        public void runOnBackpacks(
-                Player player,
-                BackpackInventorySlotConsumer consumer
-        ) {
-        }
+        public void runOnBackpacks(Player player, BackpackInventorySlotConsumer consumer) {}
 
         public interface BackpackInventorySlotConsumer {
             boolean accept(
-                    ItemStack backpack,
-                    String inventoryHandlerName,
-                    Object identifier,
-                    int slot
-            );
+                    ItemStack backpack, String inventoryHandlerName, Object identifier, int slot);
         }
     }
 
-    /**
-     * Simulates a future callback ABI changing boolean accept(...) to void.
-     */
+    /** Simulates a future callback ABI changing boolean accept(...) to void. */
     static final class WrongConsumerReturnProvider {
 
         public static WrongConsumerReturnProvider get() {
             return new WrongConsumerReturnProvider();
         }
 
-        public void runOnBackpacks(
-                Player player,
-                BackpackInventorySlotConsumer consumer
-        ) {
-        }
+        public void runOnBackpacks(Player player, BackpackInventorySlotConsumer consumer) {}
 
         public interface BackpackInventorySlotConsumer {
             void accept(
-                    ItemStack backpack,
-                    String inventoryHandlerName,
-                    String identifier,
-                    int slot
-            );
+                    ItemStack backpack, String inventoryHandlerName, String identifier, int slot);
         }
     }
 
     /**
-     * Simulates a future runOnBackpacks generation whose return type is neither
-     * the historical void nor the known boolean contract.
+     * Simulates a future runOnBackpacks generation whose return type is neither the historical void
+     * nor the known boolean contract.
      */
     static final class WrongRunReturnProvider {
 
@@ -287,20 +203,13 @@ class PlayerInventoryProviderBridgeTest {
             return new WrongRunReturnProvider();
         }
 
-        public int runOnBackpacks(
-                Player player,
-                BackpackInventorySlotConsumer consumer
-        ) {
+        public int runOnBackpacks(Player player, BackpackInventorySlotConsumer consumer) {
             return 0;
         }
 
         public interface BackpackInventorySlotConsumer {
             boolean accept(
-                    ItemStack backpack,
-                    String inventoryHandlerName,
-                    String identifier,
-                    int slot
-            );
+                    ItemStack backpack, String inventoryHandlerName, String identifier, int slot);
         }
     }
 }

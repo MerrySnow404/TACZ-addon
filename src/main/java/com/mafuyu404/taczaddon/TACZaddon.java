@@ -1,10 +1,14 @@
 package com.mafuyu404.taczaddon;
 
-import com.mafuyu404.taczaddon.event.SetupEvent;
-import com.mafuyu404.taczaddon.init.Config;
-import com.mafuyu404.taczaddon.init.ModRecipeSerializers;
-import com.mafuyu404.taczaddon.init.NetworkHandler;
-import com.mafuyu404.taczaddon.init.RuleRegistry;
+import com.mafuyu404.taczaddon.bootstrap.InventoryIntegrationSetup;
+import com.mafuyu404.taczaddon.bootstrap.SetupEvent;
+import com.mafuyu404.taczaddon.config.ClientConfig;
+import com.mafuyu404.taczaddon.config.CommonConfig;
+import com.mafuyu404.taczaddon.config.ConfigMigration;
+import com.mafuyu404.taczaddon.config.RuleRegistry;
+import com.mafuyu404.taczaddon.gunsmith.recipe.ModRecipeSerializers;
+import com.mafuyu404.taczaddon.network.NetworkHandler;
+
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -15,16 +19,19 @@ public class TACZaddon {
     public static final String MODID = "taczaddon";
 
     public TACZaddon(IEventBus bus, ModContainer modContainer) {
-        com.mafuyu404.taczaddon.init.ConfigMigration.migrate(net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get());
+        InventoryIntegrationSetup.register();
+        ConfigMigration.migrate(net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get());
         NetworkHandler.register(bus);
         ModRecipeSerializers.SERIALIZERS.register(bus);
-        bus.addListener(Config::onConfigLoad);
-        bus.addListener(Config::onConfigReload);
+        bus.addListener(ClientConfig::onConfigLoad);
+        bus.addListener(ClientConfig::onConfigReload);
         bus.addListener(SetupEvent::onClientSetup);
-        bus.addListener(com.mafuyu404.taczaddon.init.CommonConfig::onConfigReload);
+        bus.addListener(CommonConfig::onConfigReload);
         if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient())
-            modContainer.registerConfig(ModConfig.Type.CLIENT, Config.SPEC, "taczaddon-client.toml");
-        modContainer.registerConfig(ModConfig.Type.COMMON, com.mafuyu404.taczaddon.init.CommonConfig.SPEC, "taczaddon-common.toml");
+            modContainer.registerConfig(
+                    ModConfig.Type.CLIENT, ClientConfig.SPEC, "taczaddon-client.toml");
+        modContainer.registerConfig(
+                ModConfig.Type.COMMON, CommonConfig.SPEC, "taczaddon-common.toml");
         RuleRegistry.init();
     }
 }

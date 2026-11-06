@@ -1,0 +1,27 @@
+package com.mafuyu404.taczaddon.gunsmith.crafting;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+
+import java.util.UUID;
+
+public sealed interface CraftingSourceKey
+        permits CraftingSourceKey.PlayerInventory, CraftingSourceKey.BlockEntity {
+
+    String type();
+
+    record PlayerInventory(UUID playerId) implements CraftingSourceKey {
+        @Override
+        public String type() {
+            return "player";
+        }
+    }
+
+    record BlockEntity(ResourceKey<Level> dimension, BlockPos pos) implements CraftingSourceKey {
+        @Override
+        public String type() {
+            return "block";
+        }
+    }
+}

@@ -1,7 +1,8 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.init.CommonConfig;
+import com.mafuyu404.taczaddon.config.CommonConfig;
 import com.tacz.guns.entity.shooter.LivingEntityDrawGun;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

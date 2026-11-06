@@ -1,7 +1,9 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.client.SophisticatedBackpacksClientSync;
+import com.mafuyu404.taczaddon.compat.sophisticated.client.SophisticatedBackpacksClientSync;
+
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,8 +17,7 @@ import java.util.UUID;
 @Pseudo
 @Mixin(
         targets = "net.p3pp3rf1y.sophisticatedbackpacks.network.BackpackContentsPayload",
-        remap = false
-)
+        remap = false)
 public abstract class BackpackContentsPayloadMixin {
     @Inject(
             method = "handlePayload",
@@ -29,23 +30,17 @@ public abstract class BackpackContentsPayloadMixin {
              * shape degrades to a missing optional feature instead of a
              * startup crash.
              */
-            require = 0
-    )
+            require = 0)
     private static void taczaddon$afterBackpackContentsReceived(
-            @Coerce Object payload,
-            IPayloadContext context,
-            CallbackInfo ci
-    ) {
+            @Coerce Object payload, IPayloadContext context, CallbackInfo ci) {
         if (payload == null) {
             return;
         }
 
         try {
-            Method uuidAccessor =
-                    payload.getClass().getMethod("backpackUuid");
+            Method uuidAccessor = payload.getClass().getMethod("backpackUuid");
 
-            Method contentsAccessor =
-                    payload.getClass().getMethod("backpackContents");
+            Method contentsAccessor = payload.getClass().getMethod("backpackContents");
 
             Object contents = contentsAccessor.invoke(payload);
             if (contents == null) {

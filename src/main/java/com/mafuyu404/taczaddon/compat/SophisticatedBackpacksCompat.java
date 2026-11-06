@@ -2,6 +2,8 @@ package com.mafuyu404.taczaddon.compat;
 
 import com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedCapability;
 import com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedRuntime;
+import com.mafuyu404.taczaddon.inventory.CarriedInventorySource;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -17,20 +19,17 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * The only public Sophisticated Backpacks facade used by the rest of
- * TACZAddon.
+ * The only public Sophisticated Backpacks facade used by the rest of TACZAddon.
  *
- * <p>Every operation is routed through the {@link SophisticatedRuntime}
- * capability guard, which returns neutral fallbacks for ABSENT/BROKEN
- * capabilities and contains linkage failures per capability. No Sophisticated
- * class is referenced from this facade or from gameplay/event/network/cache
- * code that calls it.
+ * <p>Every operation is routed through the {@link SophisticatedRuntime} capability guard, which
+ * returns neutral fallbacks for ABSENT/BROKEN capabilities and contains linkage failures per
+ * capability. No Sophisticated class is referenced from this facade or from
+ * gameplay/event/network/cache code that calls it.
  */
 public final class SophisticatedBackpacksCompat {
     private static final String MOD_ID = "sophisticatedbackpacks";
 
-    private SophisticatedBackpacksCompat() {
-    }
+    private SophisticatedBackpacksCompat() {}
 
     private static SophisticatedRuntime runtime() {
         return SophisticatedRuntime.get();
@@ -41,8 +40,13 @@ public final class SophisticatedBackpacksCompat {
         return modList != null && modList.isLoaded(MOD_ID);
     }
 
-    public static java.util.List<com.mafuyu404.taczaddon.common.RefitSource> resolveRefitSources(ServerPlayer player) {
-        return runtime().call(SophisticatedCapability.CARRIED_BACKPACK, java.util.List::of, integration -> integration.resolveRefitSources(player));
+    public static java.util.List<CarriedInventorySource> resolveCarriedSources(
+            ServerPlayer player) {
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        java.util.List::of,
+                        integration -> integration.resolveCarriedSources(player));
     }
 
     public static void init() {
@@ -53,185 +57,146 @@ public final class SophisticatedBackpacksCompat {
     }
 
     public static List<ItemStack> getItemsFromBackpackBlock(BlockPos blockPos, Player player) {
-        return runtime().call(
-                SophisticatedCapability.BLOCK_BACKPACK,
-                ArrayList::new,
-                integration -> integration.getItemsFromBackpackBlock(
-                        blockPos,
-                        player
-                )
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.BLOCK_BACKPACK,
+                        ArrayList::new,
+                        integration -> integration.getItemsFromBackpackBlock(blockPos, player));
     }
 
     public static List<ItemStack> getItemsFromBackpackItem(ItemStack itemStack) {
-        return runtime().call(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                ArrayList::new,
-                integration -> integration.getItemsFromBackpackItem(itemStack)
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        ArrayList::new,
+                        integration -> integration.getItemsFromBackpackItem(itemStack));
     }
 
     public static List<ItemStack> getItemsFromInventoryBackpack(Player player) {
-        return runtime().call(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                ArrayList::new,
-                integration -> integration.getItemsFromInventoryBackpack(
-                        player
-                )
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        ArrayList::new,
+                        integration -> integration.getItemsFromInventoryBackpack(player));
     }
 
     /**
-     * Read-only traversal over every carried backpack. The visitor may stop
-     * the enumeration by returning {@code true}.
+     * Read-only traversal over every carried backpack. The visitor may stop the enumeration by
+     * returning {@code true}.
      */
-    public static boolean visitInventoryBackpacks(
-            Player player,
-            Predicate<IItemHandler> visitor
-    ) {
+    public static boolean visitInventoryBackpacks(Player player, Predicate<IItemHandler> visitor) {
         if (player == null || visitor == null) {
             return false;
         }
 
-        return runtime().call(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                () -> false,
-                integration ->
-                        integration.visitInventoryBackpacks(
-                                player,
-                                visitor
-                        )
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        () -> false,
+                        integration -> integration.visitInventoryBackpacks(player, visitor));
     }
 
     /**
-     * Server-only mutation traversal over every carried backpack. The visitor
-     * may stop the enumeration by returning {@code true}.
+     * Server-only mutation traversal over every carried backpack. The visitor may stop the
+     * enumeration by returning {@code true}.
      *
-     * <p>Changed backpack handlers are saved and their authoritative contents
-     * are immediately pushed back to the client inside the integration.
+     * <p>Changed backpack handlers are saved and their authoritative contents are immediately
+     * pushed back to the client inside the integration.
      */
     public static boolean mutateInventoryBackpacks(
-            ServerPlayer player,
-            Predicate<IItemHandler> visitor
-    ) {
+            ServerPlayer player, Predicate<IItemHandler> visitor) {
         if (player == null || visitor == null) {
             return false;
         }
 
-        return runtime().mutate(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                () -> false,
-                integration ->
-                        integration.mutateInventoryBackpacks(
-                                player,
-                                visitor
-                        )
-        );
+        return runtime()
+                .mutate(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        () -> false,
+                        integration -> integration.mutateInventoryBackpacks(player, visitor));
     }
 
     public static void syncAllBackpack(Player player) {
-        runtime().run(
-                SophisticatedCapability.CLIENT_SYNC,
-                integration -> integration.syncAllBackpack(player)
-        );
+        runtime()
+                .run(
+                        SophisticatedCapability.CLIENT_SYNC,
+                        integration -> integration.syncAllBackpack(player));
     }
 
     /**
-     * Refreshes the client-side wrapper whose storage UUID matches the
-     * BackpackContentsPayload response that just arrived.
+     * Refreshes the client-side wrapper whose storage UUID matches the BackpackContentsPayload
+     * response that just arrived.
      *
      * @return true when a matching carried backpack wrapper was refreshed
      */
-    public static boolean refreshInventoryBackpackWrapper(
-            Player player,
-            UUID backpackUuid
-    ) {
-        return runtime().call(
-                SophisticatedCapability.CLIENT_SYNC,
-                () -> false,
-                integration -> integration.refreshInventoryBackpackWrapper(
-                        player,
-                        backpackUuid
-                )
-        );
+    public static boolean refreshInventoryBackpackWrapper(Player player, UUID backpackUuid) {
+        return runtime()
+                .call(
+                        SophisticatedCapability.CLIENT_SYNC,
+                        () -> false,
+                        integration ->
+                                integration.refreshInventoryBackpackWrapper(player, backpackUuid));
     }
 
-    public static void modifyInventoryBackpack(ServerPlayer player, ItemStack backpackItem, Consumer<IItemHandler> action) {
-        runtime().run(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                integration -> integration.modifyInventoryBackpack(
-                        player,
-                        backpackItem,
-                        action
-                )
-        );
+    public static void modifyInventoryBackpack(
+            ServerPlayer player, ItemStack backpackItem, Consumer<IItemHandler> action) {
+        runtime()
+                .run(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        integration ->
+                                integration.modifyInventoryBackpack(player, backpackItem, action));
     }
 
-    public static void modifyBlockBackpack(ServerPlayer player, BlockPos blockPos, Consumer<IItemHandler> action) {
-        runtime().run(
-                SophisticatedCapability.BLOCK_BACKPACK,
-                integration -> integration.modifyBlockBackpack(
-                        player,
-                        blockPos,
-                        action
-                )
-        );
+    public static void modifyBlockBackpack(
+            ServerPlayer player, BlockPos blockPos, Consumer<IItemHandler> action) {
+        runtime()
+                .run(
+                        SophisticatedCapability.BLOCK_BACKPACK,
+                        integration -> integration.modifyBlockBackpack(player, blockPos, action));
     }
 
-    public static void forEachInventoryBackpackHandler(Player player, Consumer<IItemHandler> action) {
-        runtime().run(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                integration -> integration.forEachInventoryBackpackHandler(
-                        player,
-                        action
-                )
-        );
+    public static void forEachInventoryBackpackHandler(
+            Player player, Consumer<IItemHandler> action) {
+        runtime()
+                .run(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        integration -> integration.forEachInventoryBackpackHandler(player, action));
     }
 
-    public static void forEachBlockBackpackHandler(Player player, BlockPos blockPos, Consumer<IItemHandler> action) {
-        runtime().run(
-                SophisticatedCapability.BLOCK_BACKPACK,
-                integration -> integration.forEachBlockBackpackHandler(
-                        player,
-                        blockPos,
-                        action
-                )
-        );
+    public static void forEachBlockBackpackHandler(
+            Player player, BlockPos blockPos, Consumer<IItemHandler> action) {
+        runtime()
+                .run(
+                        SophisticatedCapability.BLOCK_BACKPACK,
+                        integration ->
+                                integration.forEachBlockBackpackHandler(player, blockPos, action));
     }
 
     public static boolean isBackpackBlock(Level level, BlockPos blockPos) {
-        return runtime().call(
-                SophisticatedCapability.BLOCK_BACKPACK,
-                () -> false,
-                integration -> integration.isBackpackBlock(level, blockPos)
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.BLOCK_BACKPACK,
+                        () -> false,
+                        integration -> integration.isBackpackBlock(level, blockPos));
     }
 
-    public static int countInventoryBackpackAmmo(
-            Player player,
-            ItemStack gunStack
-    ) {
-        if (player == null
-                || gunStack.isEmpty()) {
+    public static int countInventoryBackpackAmmo(Player player, ItemStack gunStack) {
+        if (player == null || gunStack.isEmpty()) {
             return 0;
         }
 
-        return runtime().call(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                () -> 0,
-                integration -> integration.countInventoryBackpackAmmo(
-                        player,
-                        gunStack
-                )
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        () -> 0,
+                        integration -> integration.countInventoryBackpackAmmo(player, gunStack));
     }
 
     public static List<ItemStack> getAllInventoryBackpack(Player player) {
-        return runtime().call(
-                SophisticatedCapability.CARRIED_BACKPACK,
-                ArrayList::new,
-                integration -> integration.getAllInventoryBackpack(player)
-        );
+        return runtime()
+                .call(
+                        SophisticatedCapability.CARRIED_BACKPACK,
+                        ArrayList::new,
+                        integration -> integration.getAllInventoryBackpack(player));
     }
 }

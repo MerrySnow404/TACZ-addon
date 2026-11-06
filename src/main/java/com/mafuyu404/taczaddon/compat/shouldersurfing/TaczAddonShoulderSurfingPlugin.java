@@ -5,8 +5,9 @@ import com.github.exopandora.shouldersurfing.api.client.event.ComputePlayerAimSt
 import com.github.exopandora.shouldersurfing.api.client.event.ComputeTemporaryFirstPersonStateEvent;
 import com.github.exopandora.shouldersurfing.api.event.IEventBus;
 import com.github.exopandora.shouldersurfing.api.plugin.IShoulderSurfingPlugin;
-import com.mafuyu404.taczaddon.common.BetterAimCamera;
-import com.mafuyu404.taczaddon.common.VanillaAimCamera;
+import com.mafuyu404.taczaddon.camera.client.AimCameraController;
+import com.mafuyu404.taczaddon.camera.client.VanillaAimCamera;
+
 import net.minecraft.client.Minecraft;
 
 /** Loaded exclusively by SSR's shouldersurfing_plugin.json discovery. */
@@ -28,12 +29,14 @@ public final class TaczAddonShoulderSurfingPlugin implements IShoulderSurfingPlu
 
     private static void computeAim(ComputePlayerAimStateEvent event) {
         if (!ownsCamera()) return;
-        if (event.getEntity() == Minecraft.getInstance().player && BetterAimCamera.isAimActive()) {
+        if (event.getEntity() == Minecraft.getInstance().player
+                && AimCameraController.isAimActive()) {
             event.setResult(true);
         }
     }
 
     private static void computeTemporaryFirstPerson(ComputeTemporaryFirstPersonStateEvent event) {
-        if (ownsCamera() && BetterAimCamera.isTemporaryFirstPersonRequested()) event.setResult(true);
+        if (ownsCamera() && AimCameraController.isTemporaryFirstPersonRequested())
+            event.setResult(true);
     }
 }

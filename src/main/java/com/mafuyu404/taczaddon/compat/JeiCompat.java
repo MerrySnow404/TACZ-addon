@@ -9,8 +9,7 @@ import net.neoforged.fml.ModList;
 public final class JeiCompat {
     private static final String MOD_ID = "jei";
 
-    private JeiCompat() {
-    }
+    private JeiCompat() {}
 
     public static void init() {
         // Kept for existing setup calls; mod-loaded state is checked lazily.

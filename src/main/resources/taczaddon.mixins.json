@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "taczaddon.refmap.json",
   "mixins": [
+    "OfficialVirtualAttachmentMixin",
     "AbstractGunItemMixin",
     "ClientMessageUnloadAttachmentAccessor",
     "ClientMessageUnloadAttachmentMixin",
@@ -22,6 +23,8 @@
   "client": [
     "AbstractContainerScreenMixin",
     "AimKeyMixin",
+    "OfficialAimKeyMixin",
+    "ClientAmmoCountMixin",
     "AnimateGeoItemRendererMixin",
     "BackpackContentsPayloadMixin",
     "ClientAttachmentItemTooltipMixin",

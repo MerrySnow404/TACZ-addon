@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.compat.leawind;
 
-import com.mafuyu404.taczaddon.common.BetterAimCamera;
+import com.mafuyu404.taczaddon.camera.client.AimCameraController;
+
 import io.github.leawind.perspectiveapi.api.PerspectiveAPI;
 import io.github.leawind.perspectiveapi.api.PerspectiveSwitcherBehavior;
 
@@ -11,13 +12,17 @@ public final class LeawindAimCamera {
     private LeawindAimCamera() {}
 
     public static void init() {
-        PerspectiveAPI.runWhenReady("taczaddon:better_aim_camera", () ->
-                // priority:perspective_api.override = 1000; above the builtin switcher (MIN_VALUE).
-                PerspectiveAPI.getOverrideChain().register(1000, LeawindAimCamera::requestedPerspective));
+        PerspectiveAPI.runWhenReady(
+                "taczaddon:better_aim_camera",
+                () ->
+                        // priority:perspective_api.override = 1000; above the builtin switcher
+                        // (MIN_VALUE).
+                        PerspectiveAPI.getOverrideChain()
+                                .register(1000, LeawindAimCamera::requestedPerspective));
     }
 
     private static String requestedPerspective() {
-        if (!BetterAimCamera.isTemporaryFirstPersonRequested()) return null;
+        if (!AimCameraController.isTemporaryFirstPersonRequested()) return null;
         // Read the player's selection, not getCurrent(): the latter is our temporary FP
         // after the first frame and would produce an FP/third-person oscillation.
         var switcher = PerspectiveAPI.getSwitcherManager().getSelectedSwitcher();

@@ -18,47 +18,59 @@ final class CreateStorageBackpacksCompatInner {
 
     static boolean visit(Player player, Predicate<IItemHandler> visitor, boolean mutate) {
         Set<ItemStack> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-        Predicate<ItemStack> visitStack = stack -> {
-            if (stack.isEmpty() || !(stack.getItem() instanceof BackpackItem) || !seen.add(stack)) return false;
-            try {
-                return visitContents(player, stack, visitor, mutate);
-            } finally {
-                if (mutate) {
-                    player.getInventory().setChanged();
-                    player.inventoryMenu.broadcastChanges();
-                    player.containerMenu.broadcastChanges();
-                    // Curios observes stack NBT changes during its normal equipment sync tick.
-                }
-            }
-        };
+        Predicate<ItemStack> visitStack =
+                stack -> {
+                    if (stack.isEmpty()
+                            || !(stack.getItem() instanceof BackpackItem)
+                            || !seen.add(stack)) return false;
+                    try {
+                        return visitContents(player, stack, visitor, mutate);
+                    } finally {
+                        if (mutate) {
+                            player.getInventory().setChanged();
+                            player.inventoryMenu.broadcastChanges();
+                            player.containerMenu.broadcastChanges();
+                            // Curios observes stack NBT changes during its normal equipment sync
+                            // tick.
+                        }
+                    }
+                };
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
             if (visitStack.test(player.getInventory().getItem(slot))) return true;
         }
-        Predicate<IItemHandler> curiosVisitor = handler -> {
-            for (int slot = 0; slot < handler.getSlots(); slot++) {
-                if (visitStack.test(handler.getStackInSlot(slot))) return true;
-            }
-            return false;
-        };
-        return mutate ? CuriosCompat.mutateHandlers(player, curiosVisitor)
+        Predicate<IItemHandler> curiosVisitor =
+                handler -> {
+                    for (int slot = 0; slot < handler.getSlots(); slot++) {
+                        if (visitStack.test(handler.getStackInSlot(slot))) return true;
+                    }
+                    return false;
+                };
+        return mutate
+                ? CuriosCompat.mutateHandlers(player, curiosVisitor)
                 : CuriosCompat.visitHandlers(player, curiosVisitor);
     }
 
-    static boolean visitContents(Player player, ItemStack stack, Predicate<IItemHandler> visitor, boolean mutate) {
+    static boolean visitContents(
+            Player player, ItemStack stack, Predicate<IItemHandler> visitor, boolean mutate) {
         // Queries and upstream constructor side effects must never mutate the live stack.
         ItemStack working = stack.copy();
         BackpackContainer container = new BackpackContainer(player, working);
         var items = BackpackSlotLayout.createLayout().items();
-        IItemHandler handler = new RangedWrapper(container.getItemHandler(),
-                items.getStartIndex(), items.getStartIndex() + items.getCount());
+        IItemHandler handler =
+                new RangedWrapper(
+                        container.getItemHandler(),
+                        items.getStartIndex(),
+                        items.getStartIndex() + items.getCount());
         try {
             return visitor.test(handler);
         } finally {
             if (mutate) {
                 // Keep unrelated settings. Also persist partial extractions and ammo-box NBT edits.
                 container.saveItemsToStack();
-                stack.set(net.minecraft.core.component.DataComponents.CONTAINER,
-                        working.getOrDefault(net.minecraft.core.component.DataComponents.CONTAINER,
+                stack.set(
+                        net.minecraft.core.component.DataComponents.CONTAINER,
+                        working.getOrDefault(
+                                net.minecraft.core.component.DataComponents.CONTAINER,
                                 net.minecraft.world.item.component.ItemContainerContents.EMPTY));
                 if (player != null) BackpackContainer.Cache.invalidateWornBackpack(player);
             }

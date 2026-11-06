@@ -2,6 +2,7 @@ package com.mafuyu404.taczaddon.compat;
 
 import com.solr98.beyondintegration.client.TaczAmmoCache;
 import com.solr98.beyondintegration.handler.TaczAmmoExtractor;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 

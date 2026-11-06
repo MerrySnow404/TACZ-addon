@@ -1,18 +1,21 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.common.AmmoConsumptionOrchestrator;
-import com.mafuyu404.taczaddon.common.AmmoConsumptionOrchestrator.ConsumptionOutcome;
-import com.mafuyu404.taczaddon.common.BackpackAmmoService;
-import com.mafuyu404.taczaddon.common.CuriosAmmoService;
+import com.mafuyu404.taczaddon.ammo.AmmoConsumptionOrchestrator;
+import com.mafuyu404.taczaddon.ammo.AmmoConsumptionOrchestrator.ConsumptionOutcome;
+import com.mafuyu404.taczaddon.ammo.BackpackAmmoService;
+import com.mafuyu404.taczaddon.ammo.CuriosAmmoService;
 import com.mafuyu404.taczaddon.compat.BeyondIntegrationCompat;
+import com.mafuyu404.taczaddon.compat.CreateStorageCompat;
 import com.mafuyu404.taczaddon.compat.CuriosCompat;
 import com.mafuyu404.taczaddon.compat.SophisticatedBackpacksCompat;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
+
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,12 +39,9 @@ public class ModernKineticGunScriptAPIMixin {
             at = @At("RETURN"),
             cancellable = true,
             remap = false,
-            require = 1
-    )
+            require = 1)
     private void taczaddon$consumeBackpackAmmo(
-            int neededAmount,
-            CallbackInfoReturnable<Integer> cir
-    ) {
+            int neededAmount, CallbackInfoReturnable<Integer> cir) {
         if (neededAmount <= 0
                 || this.abstractGunItem == null
                 || this.shooter == null
@@ -56,10 +56,8 @@ public class ModernKineticGunScriptAPIMixin {
          */
         if (AmmoConsumptionOrchestrator.usesNativeVirtualAmmo(
                 this.abstractGunItem.useInventoryAmmo(this.itemStack),
-                IGunOperator.fromLivingEntity(this.shooter)
-                        .needCheckAmmo(),
-                this.abstractGunItem.useDummyAmmo(this.itemStack)
-        )) {
+                IGunOperator.fromLivingEntity(this.shooter).needCheckAmmo(),
+                this.abstractGunItem.useDummyAmmo(this.itemStack))) {
             return;
         }
 
@@ -69,50 +67,36 @@ public class ModernKineticGunScriptAPIMixin {
          * re-checks its own usable state before the backend is called.
          */
         if (!(this.shooter instanceof ServerPlayer player)
-                || (!SophisticatedBackpacksCompat.isInstalled() && !CuriosCompat.isInstalled()
-                    && !com.mafuyu404.taczaddon.compat.CreateStorageCompat.isUsable())) {
+                || (!SophisticatedBackpacksCompat.isInstalled()
+                        && !CuriosCompat.isInstalled()
+                        && !CreateStorageCompat.isUsable())) {
             return;
         }
 
         AbstractGunItem gun = this.abstractGunItem;
         ItemStack gunStack = this.itemStack;
         boolean beyondActive = BeyondIntegrationCompat.isUsable();
-        int consumedSoFar = AmmoConsumptionOrchestrator.clampConsumed(
-                neededAmount,
-                cir.getReturnValueI()
-        );
+        int consumedSoFar =
+                AmmoConsumptionOrchestrator.clampConsumed(neededAmount, cir.getReturnValueI());
         /*
          * One orchestration layer owns the whole TaCZ -> Beyond ->
          * Sophisticated -> Curios priority. Every source receives the real
          * remaining amount and is skipped once the requirement is satisfied,
          * so a finished path is never executed again.
          */
-        ConsumptionOutcome outcome = AmmoConsumptionOrchestrator
-                .consumeRemaining(
-                neededAmount,
-                consumedSoFar,
-                beyondActive
-                        ? remaining ->
-                                BeyondIntegrationCompat
-                                        .consumeThroughTaczInventoryContract(
-                                                player,
-                                                gun,
-                                                gunStack,
-                                                remaining
-                                        )
-                        : remaining -> ConsumptionOutcome.confirmed(0),
-                remaining -> BackpackAmmoService
-                        .consumeBackpackAmmo(
-                                player,
-                                gunStack,
-                                remaining
-                        ),
-                remaining -> CuriosAmmoService.consumeAmmo(
-                        player,
-                        gunStack,
-                        remaining
-                )
-        );
+        ConsumptionOutcome outcome =
+                AmmoConsumptionOrchestrator.consumeRemaining(
+                        neededAmount,
+                        consumedSoFar,
+                        beyondActive
+                                ? remaining ->
+                                        BeyondIntegrationCompat.consumeThroughTaczInventoryContract(
+                                                player, gun, gunStack, remaining)
+                                : remaining -> ConsumptionOutcome.confirmed(0),
+                        remaining ->
+                                BackpackAmmoService.consumeBackpackAmmo(
+                                        player, gunStack, remaining),
+                        remaining -> CuriosAmmoService.consumeAmmo(player, gunStack, remaining));
         int finalConsumed = outcome.consumed();
 
         if (beyondActive || outcome.stoppedAbnormally() || cir.getReturnValueI() != finalConsumed) {
