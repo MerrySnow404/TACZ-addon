@@ -68,8 +68,17 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void taczaddon$initFields(CallbackInfo ci) {
-        this.taczaddon$controller = new GunSmithScreenController(this);
-        taczaddon$controller.initFields();
+        taczaddon$getController();
+    }
+
+    @Unique
+    private GunSmithScreenController taczaddon$getController() {
+        // TaCZ also classifies recipes inside its constructor, before our TAIL injection.
+        if (this.taczaddon$controller == null) {
+            this.taczaddon$controller = new GunSmithScreenController(this);
+            this.taczaddon$controller.initFields();
+        }
+        return this.taczaddon$controller;
     }
 
     @Redirect(
@@ -77,12 +86,12 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
             at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))
     private boolean taczaddon$filterAttachmentProperty(
             List<Pair<ResourceLocation, ResourceLocation>> list, Object e) {
-        return taczaddon$controller.filterAttachmentProperty(list, e);
+        return taczaddon$getController().filterAttachmentProperty(list, e);
     }
 
     @Inject(method = "init", at = @At("HEAD"), remap = true)
     private void taczaddon$restoreAttachmentFilterBeforeClassify(CallbackInfo ci) {
-        taczaddon$controller.restoreAttachmentFilterBeforeClassify();
+        taczaddon$getController().restoreAttachmentFilterBeforeClassify();
     }
 
     @Inject(
@@ -95,12 +104,12 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
                             shift = At.Shift.AFTER),
             remap = false)
     private void taczaddon$restoreBrowseStateAfterClassify(CallbackInfo ci) {
-        taczaddon$controller.restoreBrowseStateAfterClassify();
+        taczaddon$getController().restoreBrowseStateAfterClassify();
     }
 
     @Inject(method = "init", at = @At("TAIL"), remap = true)
     private void taczaddon$onScreenChanged(CallbackInfo ci) {
-        taczaddon$controller.onScreenChanged();
+        taczaddon$getController().onScreenChanged();
     }
 
     @ModifyArg(
@@ -114,7 +123,7 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
             index = 1,
             remap = true)
     private Component taczaddon$renderPageInfo(Component p_282131_) {
-        return taczaddon$controller.renderPageInfo();
+        return taczaddon$getController().renderPageInfo();
     }
 
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true, remap = true)
@@ -124,19 +133,19 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
             double scrollX,
             double scrollY,
             CallbackInfoReturnable<Boolean> cir) {
-        if (taczaddon$controller.guardMouseScrolledWhenNoRecipes(mouseX, mouseY, scrollX, scrollY))
+        if (taczaddon$getController().guardMouseScrolledWhenNoRecipes(mouseX, mouseY, scrollX, scrollY))
             cir.setReturnValue(true);
     }
 
     @ModifyVariable(method = "getPlayerIngredientCount", at = @At("STORE"), ordinal = 0)
     private Inventory taczaddon$modifyIngredientShow(Inventory inventory) {
-        return taczaddon$controller.modifyIngredientShow(inventory);
+        return taczaddon$getController().modifyIngredientShow(inventory);
     }
 
     @Inject(method = "render", at = @At("HEAD"), remap = true)
     private void taczaddon$storedMousePos(
             GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        taczaddon$controller.storeMousePosition(mouseX, mouseY);
+        taczaddon$getController().storeMousePosition(mouseX, mouseY);
     }
 
     @Redirect(
@@ -149,7 +158,7 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
             remap = true)
     private void taczaddon$renderBetterIngredient(
             GuiGraphics graphics, ItemStack itemStack, int x, int y) {
-        taczaddon$controller.renderBetterIngredient(graphics, itemStack, x, y);
+        taczaddon$getController().renderBetterIngredient(graphics, itemStack, x, y);
     }
 
     @Shadow @Nullable private Int2IntArrayMap playerIngredientCount;
@@ -169,7 +178,7 @@ public abstract class GunSmithTableScreenMixin extends AbstractContainerScreen<G
             index = 8,
             remap = false)
     private Button.OnPress taczaddon$wrapCraftButtonCallback(Button.OnPress original) {
-        return taczaddon$controller.craftButtonAction();
+        return taczaddon$getController().craftButtonAction();
     }
 
     @Override

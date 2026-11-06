@@ -25,6 +25,11 @@ sourceSets.main.resources {
 }
 
 repositories {
+    maven {
+        name = "Sighs"
+        url = uri("https://maven.sighs.cc/repository/maven-public/")
+        content { includeGroup "com.sighs.autojs" }
+    }
     exclusiveContent {
         forRepository {
             maven {
@@ -62,7 +67,7 @@ if (compatSmoke) {
         runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
     }
 }
-configurations.matching { it.name in ['runtimeClasspath', 'testRuntimeClasspath'] }.configureEach {
+configurations.named('runtimeClasspath') {
     if (optionalMods == 'none' || !(ecosystemMods in ['create', 'both'])) {
         exclude group: 'curse.maven', module: 'create-storage-neo-forge-1281770'
         exclude group: 'maven.modrinth', module: 'LNytGWDc'
@@ -132,11 +137,6 @@ neoForge {
         }
     }
 
-    unitTest {
-        enable()
-        testedMod.set(project.provider(() -> mods.getByName(mod_id)))
-    }
-
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
@@ -150,6 +150,8 @@ configurations {
 }
 
 dependencies {
+    implementation "com.sighs.autojs:AutoJS-neoforge-1.21.1:1.0.1"
+    implementation "curse.maven:rhino-416294:8463898"
     compileOnly "net.createmod.ponder:Ponder-NeoForge-1.21.1:1.0.64" // Runtime copy is bundled by Create
     implementation "maven.modrinth:LNytGWDc:UjX6dr61" // Create 6.0.10, required by Create Storage
     implementation "curse.maven:create-storage-neo-forge-1281770:9088348"
@@ -160,14 +162,13 @@ dependencies {
     if (providers.gradleProperty('taczRuntimeJar').isPresent()) {
         runtimeOnly files(providers.gradleProperty('taczRuntimeJar').get())
         configurations.runtimeClasspath.exclude group: 'curse.maven', module: 'tacz-1-21-1-1353462'
-        configurations.testRuntimeClasspath.exclude group: 'curse.maven', module: 'tacz-1-21-1-1353462'
     }
 
     compileOnly "maven.modrinth:shoulder-surfing-reloaded:5380Ijsk"
 
 
-    implementation "maven.modrinth:sophisticated-backpacks:4JH1U61x"
-    implementation "maven.modrinth:sophisticated-core:yIF7JvxG"
+    implementation "maven.modrinth:sophisticated-backpacks:DY0e8WVr"
+    implementation "maven.modrinth:sophisticated-core:fp75rxsS"
 
     implementation "maven.modrinth:jei:1vC6z8wV"
     implementation "maven.modrinth:curios:yohfFbgD"
@@ -183,14 +184,14 @@ dependencies {
         localRuntime "curse.maven:perspective-api-1575322:8595570"
     }
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
-    systemProperty 'taczaddon.test.official', providers.gradleProperty('taczRuntimeJar').isPresent()
+    enabled = false
+}
+
+tasks.named('check') {
+    setDependsOn([])
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

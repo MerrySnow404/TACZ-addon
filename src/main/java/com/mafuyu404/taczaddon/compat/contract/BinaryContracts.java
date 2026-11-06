@@ -252,13 +252,13 @@ public final class BinaryContracts {
             }
 
             if ("backpackUuid".equals(name)
-                    && UUID_DESCRIPTOR.equals(descriptor)
+                    && ("()" + UUID_DESCRIPTOR).equals(descriptor)
                     && !staticMethod) {
                 backpackUuidAccessor = true;
             }
 
             if ("backpackContents".equals(name)
-                    && COMPOUND_TAG_DESCRIPTOR.equals(descriptor)
+                    && ("()" + COMPOUND_TAG_DESCRIPTOR).equals(descriptor)
                     && !staticMethod) {
                 backpackContentsAccessor = true;
             }

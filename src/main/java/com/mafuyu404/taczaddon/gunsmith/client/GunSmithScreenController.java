@@ -110,7 +110,8 @@ public final class GunSmithScreenController {
     }
 
     public void initFields() {
-        // Called once from the target screen constructor after its fields are available.
+        // Called once on first use, which can occur during the target screen constructor.
+        // Keep initialization independent of the host screen fields.
         this.attachmentProp = new ArrayList<>();
         this.selectedAttachmentPropIndex = 0;
         this.dropdown = null;
