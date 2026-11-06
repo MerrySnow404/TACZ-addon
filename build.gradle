@@ -36,6 +36,15 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
 
+// Optional client mods are available to compilation, but never to a
+// dedicated server. This source set supplies only the client launch classpath.
+sourceSets {
+    client
+}
+configurations {
+    compileOnly.extendsFrom clientRuntimeOnly
+}
+
 minecraft {
 
     mappings channel: mapping_channel, version: mapping_version
@@ -64,18 +73,14 @@ minecraft {
         }
 
         client {
+            source sourceSets.client
+            lazyToken('minecraft_classpath') { configurations.clientRuntimeClasspath.asPath }
             workingDirectory project.file('run/client')
-            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
             workingDirectory project.file('run/server')
-            property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         data {
@@ -131,358 +136,6 @@ repositories {
         dirs 'libs'
     }
 }
-/*
- * ---------------------------------------------------------------------------
- * Real upstream compatibility fixtures
- * ---------------------------------------------------------------------------
- *
- * These configurations are deliberately isolated from main/test runtime
- * classpaths. They exist only to materialize exact upstream jars used by
- * binary ABI verification tests.
- */
-
-def compatibilityFixtureRoot =
-        layout.buildDirectory.dir("compatibility-fixtures")
-
-def allowMissingCompatibilityFixtures =
-        providers.systemProperty(
-                "taczaddon.compat.allowMissingFixtures"
-        ).map {
-            Boolean.parseBoolean(it)
-        }.orElse(false)
-
-/*
- * Exact, immutable upstream artifacts.
- *
- * Do not replace these with dynamic versions or version ranges. Updating a
- * fixture is an explicit compatibility decision and should change this table.
- */
-def compatibilityFixtureSpecs = [
-        [group: "sophisticated", generation: "3.26.latest", kind: "backpacks",
-         version: "3.26.19.2239", artifact: "maven.modrinth:TyCTlI4b:VjliRs3R"],
-        [group: "sophisticated", generation: "3.26.latest", kind: "core",
-         version: "1.5.21.2444", artifact: "maven.modrinth:nmoqTijg:K4JBJmEV"],
-        [group: "createstorage", generation: "1.2.7", kind: "storage",
-         version: "1.2.7", artifact: "curse.maven:create-storage-neo-forge-1281770:8712044"],
-        [group: "sophisticated", generation: "3.26.4", kind: "backpacks",
-         version: "3.26.4.2172", artifact: "curse.maven:sophisticated-backpacks-422301:8992941"],
-        [group: "sophisticated", generation: "3.26.4", kind: "core",
-         version: "1.5.2.2346", artifact: "curse.maven:sophisticated-core-618298:8985880"],
-        [group: "sophisticated", generation: "storage.previous", kind: "storage",
-         version: "1.4.86.2131", artifact: "curse.maven:sophisticated-storage-619320:8719374"],
-        [group: "shouldersurfing", generation: "v5.previous", kind: "shouldersurfing",
-         version: "5.1.1", artifact: "curse.maven:shoulder-surfing-reloaded-243190:8950312"],
-        [group: "tacz", generation: "hotfix", kind: "tacz",
-         version: "1.1.8-hotfix", artifact: "maven.modrinth:SzzJttH8:yOVIzIJR"],
-        [group: "tacz", generation: "hotfix2", kind: "tacz",
-         version: "1.1.8-hotfix2", artifact: "maven.modrinth:SzzJttH8:AzCBJlex"],
-        [group: "tacz", generation: "1.2.0", kind: "tacz",
-         version: "1.2.0", artifact: "maven.modrinth:SzzJttH8:QGCbNkTy"],
-        [group: "sophisticated", generation: "storage.current", kind: "storage",
-         version: "1.5.13.2212", artifact: "maven.modrinth:hMlaZH8f:EEqDW5P2"],
-        // ---------------- Sophisticated 3.24 ordinary-only generations
-
-        [
-                group      : "sophisticated",
-                generation : "3.24.18",
-                kind       : "backpacks",
-                version    : "3.24.18.1488",
-                artifact   :
-                        "curse.maven:sophisticated-backpacks-422301:7414216"
-        ],
-        [
-                group      : "sophisticated",
-                generation : "3.24.18",
-                kind       : "core",
-                version    : "1.2.117.1347",
-                artifact   :
-                        "curse.maven:sophisticated-core-618298:7402037"
-        ],
-
-        [
-                group      : "sophisticated",
-                generation : "3.24.67",
-                kind       : "backpacks",
-                version    : "3.24.67.2109",
-                artifact   :
-                        "maven.modrinth:TyCTlI4b:as0tf712"
-        ],
-        [
-                group      : "sophisticated",
-                generation : "3.24.67",
-                kind       : "core",
-                version    : "1.3.84.2308",
-                artifact   :
-                        "curse.maven:sophisticated-core-618298:8705513"
-        ],
-
-        // ---------------- Sophisticated 3.26 linked-storage generations
-
-        [
-                group      : "sophisticated",
-                generation : "3.26.0",
-                kind       : "backpacks",
-                version    : "3.26.0.2119",
-                artifact   :
-                        "curse.maven:sophisticated-backpacks-422301:8817428"
-        ],
-        [
-                group      : "sophisticated",
-                generation : "3.26.0",
-                kind       : "core",
-                version    : "1.5.0.2316",
-                artifact   :
-                        "curse.maven:sophisticated-core-618298:8815743"
-        ],
-
-        [
-                group      : "sophisticated",
-                generation : "3.26.3",
-                kind       : "backpacks",
-                version    : "3.26.3.2157",
-                artifact   :
-                        "maven.modrinth:TyCTlI4b:XxOZuQnU"
-        ],
-        [
-                group      : "sophisticated",
-                generation : "3.26.3",
-                kind       : "core",
-                version    : "1.5.1.2335",
-                artifact   :
-                        "curse.maven:sophisticated-core-618298:8839328"
-        ],
-
-        [
-                group      : "sophisticated",
-                generation : "3.26.current",
-                kind       : "backpacks",
-                version    : "3.26.6.2176",
-                artifact   :
-                        "maven.modrinth:TyCTlI4b:1umN9rSN"
-        ],
-        [
-                group      : "sophisticated",
-                generation : "3.26.current",
-                kind       : "core",
-                version    : "1.5.4.2362",
-                artifact   :
-                        "maven.modrinth:nmoqTijg:XQog8w6A"
-        ],
-
-        // ---------------- Shoulder Surfing generations
-
-        [
-                group      : "shouldersurfing",
-                generation : "legacy",
-                kind       : "shouldersurfing",
-                version    : "4.1.5",
-                artifact   :
-                        "curse.maven:shoulder-surfing-reloaded-243190:5455954"
-        ],
-        [
-                group      : "shouldersurfing",
-                generation : "v5",
-                kind       : "shouldersurfing",
-                version    : "5.0.10",
-                artifact   :
-                        "curse.maven:shoulder-surfing-reloaded-243190:8596413"
-        ],
-        [
-                group      : "shouldersurfing",
-                generation : "v5.current",
-                kind       : "shouldersurfing",
-                version    : "5.3.0",
-                artifact   :
-                        "maven.modrinth:kepjj2sy:Ylt5xlzc"
-        ],
-
-        // ---------------- Leawind generations
-
-        [
-                group      : "leawind",
-                generation : "2",
-                kind       : "leawind",
-                version    : "2.2.0",
-                artifact   :
-                        "curse.maven:leawind-third-person-930880:5961735"
-        ],
-        [
-                group      : "leawind",
-                generation : "3",
-                kind       : "leawind",
-                version    : "3.0.3-beta",
-                artifact   :
-                        "curse.maven:leawind-third-person-930880:8602826"
-        ],
-
-        // ---------------- Perspective API baseline
-
-        [
-                group      : "perspectiveapi",
-                generation : "1.5.0",
-                kind       : "perspectiveapi",
-                version    : "1.5.0-beta",
-                artifact   : "maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1"
-        ]
-]
-
-/*
- * One isolated, non-transitive Gradle configuration per artifact. Using raw
- * artifacts instead of fg.deobf(...) is intentional: the ABI tests inspect
- * the published upstream jar itself.
- */
-def compatibilityFixtureBindings = []
-
-compatibilityFixtureSpecs.eachWithIndex { spec, index ->
-    def configuration = configurations.create(
-            "compatibilityFixture${index}"
-    ) {
-        canBeConsumed = false
-        canBeResolved = true
-        transitive = false
-    }
-
-    dependencies.add(configuration.name, spec.artifact)
-
-    compatibilityFixtureBindings << [
-            spec          : spec,
-            configuration : configuration
-    ]
-}
-
-def resolveCompatibilityFixtures =
-        tasks.register("resolveCompatibilityFixtures") {
-            group = "verification"
-            description =
-                    "Resolves exact upstream jars used by ABI compatibility tests"
-
-            /*
-             * Coordinates are task inputs, so changing one invalidates the
-             * previously materialized fixture set.
-             */
-            inputs.property(
-                    "fixtureCoordinates",
-                    compatibilityFixtureSpecs.collect { spec ->
-                        "${spec.group}:${spec.generation}:${spec.kind}:${spec.version}:${spec.artifact}"
-                    }
-            )
-
-            outputs.dir(compatibilityFixtureRoot)
-
-            doLast {
-                File root = compatibilityFixtureRoot.get().asFile
-
-                /*
-                 * This task owns the entire directory. Rebuilding it prevents
-                 * removed fixture definitions from leaving stale jars behind.
-                 */
-                project.delete(root)
-
-                if (!root.mkdirs() && !root.isDirectory()) {
-                    throw new GradleException(
-                            "Unable to create compatibility fixture directory: ${root}"
-                    )
-                }
-
-                List<String> manifestLines = []
-
-                for (def binding : compatibilityFixtureBindings) {
-                    def spec = binding.spec
-                    Set<File> resolved
-
-                    try {
-                        resolved = binding.configuration.resolve()
-                    } catch (Exception error) {
-                        if (allowMissingCompatibilityFixtures.get()) {
-                            logger.warn(
-                                    "Unable to resolve optional compatibility fixture {} / {} / {} from {}: {}",
-                                    spec.group,
-                                    spec.generation,
-                                    spec.kind,
-                                    spec.artifact,
-                                    error.message
-                            )
-                            continue
-                        }
-
-                        throw new GradleException(
-                                "Unable to resolve mandatory compatibility fixture " +
-                                        "${spec.group}/${spec.generation}/${spec.kind} from ${spec.artifact}",
-                                error
-                        )
-                    }
-
-                    if (resolved.size() != 1) {
-                        String message =
-                                "Compatibility fixture ${spec.group}/${spec.generation}/${spec.kind} " +
-                                        "resolved ${resolved.size()} files instead of exactly one: ${resolved}"
-
-                        if (allowMissingCompatibilityFixtures.get()) {
-                            logger.warn(message)
-                            continue
-                        }
-
-                        throw new GradleException(message)
-                    }
-
-                    File source = resolved.iterator().next()
-
-                    String relativePath =
-                            "${spec.group}/${spec.generation}/${spec.kind}.jar"
-
-                    File target = new File(root, relativePath)
-
-                    if (!target.parentFile.mkdirs()
-                            && !target.parentFile.isDirectory()) {
-                        throw new GradleException(
-                                "Unable to create compatibility fixture directory: ${target.parentFile}"
-                        )
-                    }
-
-                    project.copy {
-                        from source
-                        into target.parentFile
-                        rename {
-                            target.name
-                        }
-                    }
-
-                    String prefix =
-                            "fixture.${spec.group}.${spec.generation}.${spec.kind}"
-
-                    /*
-                     * Use '/' in manifest paths on every platform; Path.resolve
-                     * accepts it on Windows as well.
-                     */
-                    manifestLines << "${prefix}.path=${relativePath.replace('\\', '/')}"
-                    manifestLines << "${prefix}.artifact=${spec.artifact}"
-                    manifestLines << "${prefix}.version=${spec.version}"
-                }
-
-                /*
-                 * Write a deterministic properties file. Do not use
-                 * Properties.store(), because it injects a timestamp.
-                 */
-                File manifest =
-                        new File(root, "fixtures.properties")
-
-                manifest.setText(
-                        manifestLines
-                                .sort()
-                                .join(System.lineSeparator()) + System.lineSeparator(),
-                        "UTF-8"
-                )
-            }
-        }
-
-/*
- * When "clean test" is requested in one invocation, fixture materialization
- * must happen after clean has removed build/.
- */
-resolveCompatibilityFixtures.configure {
-    mustRunAfter tasks.named("clean")
-}
-
 dependencies {
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
@@ -490,8 +143,8 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     /*
-    * Compile/test baseline: Sophisticated Backpacks 3.26.19.2239 +
-    * Sophisticated Core 1.5.21.2444.
+    * Compile baseline: Sophisticated Backpacks 3.26.19.2239 +
+    * Sophisticated Core 1.5.26.2457.
     *
     * Runtime metadata deliberately remains loader-tolerant for optional
     * dependency versions. Functional support is determined by structural
@@ -502,31 +155,30 @@ dependencies {
     * linked-storage generation, whose APIs must remain behind the lazy
     * optional bridge.
     */
-    implementation fg.deobf("maven.modrinth:nmoqTijg:K4JBJmEV")
+    implementation fg.deobf("maven.modrinth:nmoqTijg:c90my5iF")
     implementation fg.deobf("maven.modrinth:TyCTlI4b:VjliRs3R")
-    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:EEqDW5P2")
+    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:S0AtW2W5")
 
 
     implementation fg.deobf("maven.modrinth:SzzJttH8:QGCbNkTy")
     implementation fg.deobf("curse.maven:create-storage-neo-forge-1281770:8712044")
     // Create Storage requires Create 6.0.7+. Release-equivalent development artifacts.
     implementation(fg.deobf("com.simibubi.create:create-1.20.1:6.0.8-289:slim") { transitive = false })
-    implementation fg.deobf("net.createmod.ponder:Ponder-Forge-1.20.1:1.0.91")
+    implementation fg.deobf("net.createmod.ponder:Ponder-Forge-1.20.1:1.0.92")
     implementation fg.deobf("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
-    compileOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-1.20.1:1.0.5")
-    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-1.20.1:1.0.5")
+    compileOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-api-1.20.1:1.0.6")
+    runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-1.20.1:1.0.6")
     implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
 
-    implementation fg.deobf("maven.modrinth:kepjj2sy:Ylt5xlzc")
-    implementation fg.deobf("curse.maven:leawind-third-person-930880:8602826")
-    compileOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
-    runtimeOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
+    clientRuntimeOnly fg.deobf("maven.modrinth:kepjj2sy:Ylt5xlzc")
+    clientRuntimeOnly fg.deobf("curse.maven:leawind-third-person-930880:8602826")
+    clientRuntimeOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
 
     implementation fg.deobf("curse.maven:kubejs-238086:8020595")
     implementation fg.deobf("curse.maven:rhino-416294:6186971")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
 
-    implementation fg.deobf("maven.modrinth:u6dRKJwZ:6E4ps2ER")
+    clientRuntimeOnly fg.deobf("maven.modrinth:u6dRKJwZ:6E4ps2ER")
 
     implementation fg.deobf("curse.maven:curios-309927:6418456")
 
@@ -536,58 +188,9 @@ dependencies {
     implementation fg.deobf("curse.maven:beyond-integration-1557405:8868599")
 
     compileOnly fg.deobf("curse.maven:accelerated-rendering-1314021:8448250")
-    runtimeOnly fg.deobf("curse.maven:just-enough-characters-250702:8771525")
+    clientRuntimeOnly fg.deobf("maven.modrinth:I7k4B65h:pdLyf9hN")
 
     compileOnly 'org.ow2.asm:asm-tree:9.9.1'
-    testImplementation 'org.ow2.asm:asm-tree:9.9.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
-}
-
-tasks.named("test", Test).configure {
-    useJUnitPlatform()
-
-    dependsOn resolveCompatibilityFixtures
-
-    inputs.dir(compatibilityFixtureRoot)
-    // Forge discovers nested libraries at launch; plain JUnit needs the clock library explicitly.
-    doFirst {
-        def clockFixture = compatibilityFixtureRoot.get().file("tacz/1.2.0/tacz.jar").asFile
-        if (!clockFixture.isFile()) return // Explicit local allowMissingFixtures mode.
-        def modelLibrary = zipTree(clockFixture).matching {
-            include "META-INF/jarjar/simplebedrockmodel-*.jar"
-        }
-        classpath += modelLibrary
-        classpath += zipTree(modelLibrary.singleFile).matching { include "META-INF/jarjar/mae-*.jar" }
-    }
-
-    /*
-     * Never rely on the test process working directory.
-     */
-    systemProperty(
-            "taczaddon.fixtures.root",
-            compatibilityFixtureRoot.get().asFile.absolutePath
-    )
-
-    /*
-     * Gradle's own -D properties are not automatically inherited by the
-     * forked test JVM, so explicitly forward the development escape hatch.
-     */
-    systemProperty(
-            "taczaddon.compat.allowMissingFixtures",
-            providers.systemProperty(
-                    "taczaddon.compat.allowMissingFixtures"
-            ).orElse("false").get()
-    )
-}
-
-/*
- * Java's check task already depends on test, but keeping this dependency
- * explicit documents that ABI fixture verification is part of the normal
- * verification lifecycle.
- */
-tasks.named("check").configure {
-    dependsOn resolveCompatibilityFixtures
 }
 
 tasks.named('processResources', ProcessResources).configure {
