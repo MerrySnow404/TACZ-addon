@@ -19,6 +19,9 @@ final class TaczVersionReader {
     }
 
     static TaczCompatibilityProfile profileForVersion(String version) {
+        if (version != null && "1.2.0".equals(version.trim())) {
+            return TaczCompatibilityProfile.TACZ_1_2_0;
+        }
         if (version != null
                 && (EXPECTED_VERSION.equalsIgnoreCase(version.trim())
                 || HOTFIX2_VERSION.equalsIgnoreCase(version.trim()))) {

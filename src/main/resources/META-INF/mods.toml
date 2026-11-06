@@ -29,11 +29,11 @@ ordering="NONE"
 side="BOTH"
 
 # Hard dependency. Current version-bound TaCZ contracts are validated exactly
-# against TaCZ 1.1.8-hotfix and 1.1.8-hotfix2 (same adapter contracts).
+# against TaCZ 1.1.8-hotfix, 1.1.8-hotfix2 and 1.2.0.
 [[dependencies.${mod_id}]]
 modId="tacz"
 mandatory=true
-versionRange="[1.1.8-hotfix],[1.1.8-hotfix2]"
+versionRange="[1.1.8-hotfix],[1.1.8-hotfix2],[1.2.0]"
 ordering="AFTER"
 side="BOTH"
 

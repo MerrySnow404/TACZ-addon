@@ -1,21 +1,17 @@
 package com.mafuyu404.taczaddon.network;
 
-import com.mafuyu404.taczaddon.client.ClientRefitPacketHandler;
-import com.mafuyu404.taczaddon.common.RefitSourceResolver;
-import com.mafuyu404.taczaddon.init.crafting.RefitSourceLocator;
+import com.mafuyu404.taczaddon.refit.RefitSourceResolver;
+import com.mafuyu404.taczaddon.storage.api.RefitSourceLocator;
+
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 public final class RefitSourceSnapshotPacket {
     private final long requestId;
@@ -105,22 +101,6 @@ public final class RefitSourceSnapshotPacket {
         }
 
         return new RefitSourceSnapshotPacket(requestId, candidates);
-    }
-
-    public static void handle(
-            RefitSourceSnapshotPacket message,
-            Supplier<NetworkEvent.Context> contextSupplier
-    ) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() ->
-                DistExecutor.unsafeRunWhenOn(
-                        Dist.CLIENT,
-                        () -> () ->
-                                ClientRefitPacketHandler
-                                        .handleSourceSnapshot(message)
-                )
-        );
-        context.setPacketHandled(true);
     }
 
     public long requestId() {

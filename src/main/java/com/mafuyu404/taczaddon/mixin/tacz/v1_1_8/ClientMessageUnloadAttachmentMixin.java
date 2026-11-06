@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.common.LiberatedRefitService;
+import com.mafuyu404.taczaddon.refit.LiberatedRefitService;
+
 import com.tacz.guns.network.message.ClientMessageUnloadAttachment;
 import net.minecraftforge.network.NetworkEvent;
 import org.spongepowered.asm.mixin.Mixin;

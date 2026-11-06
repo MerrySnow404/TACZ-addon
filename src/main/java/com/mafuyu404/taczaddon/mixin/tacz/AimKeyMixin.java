@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz;
 
-import com.mafuyu404.taczaddon.client.BetterAimCamera;
+import com.mafuyu404.taczaddon.client.camera.BetterAimCamera;
+
 import com.tacz.guns.client.input.AimKey;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.event.InputEvent;

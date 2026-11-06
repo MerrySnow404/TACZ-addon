@@ -1,8 +1,9 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithExternalSourceState;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithExternalSourceState;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithSourceScreenAccess;
 import com.mafuyu404.taczaddon.compat.tacz.api.TaczGunSmithScreenAccess;
-import com.mafuyu404.taczaddon.init.crafting.GunSmithSourceScreenAccess;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;

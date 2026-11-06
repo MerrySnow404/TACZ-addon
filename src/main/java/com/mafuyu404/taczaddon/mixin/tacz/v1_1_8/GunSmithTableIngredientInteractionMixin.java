@@ -1,8 +1,9 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithIngredientInteractionState;
-import com.mafuyu404.taczaddon.client.GunSmithIngredientScreenAccess;
-import com.mafuyu404.taczaddon.compat.JeiCompat;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithIngredientInteractionState;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithIngredientScreenAccess;
+import com.mafuyu404.taczaddon.compat.jei.JeiCompat;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 /**
  * Frame-local ingredient tooltip + JEI OUTPUT navigation.

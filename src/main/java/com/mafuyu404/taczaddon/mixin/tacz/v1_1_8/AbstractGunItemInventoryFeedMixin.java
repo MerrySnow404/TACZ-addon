@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.common.BackpackAmmoService;
+import com.mafuyu404.taczaddon.ammo.BackpackAmmoService;
+
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;

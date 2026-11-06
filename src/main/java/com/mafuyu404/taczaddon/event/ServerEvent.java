@@ -1,8 +1,9 @@
 package com.mafuyu404.taczaddon.event;
 
-import com.mafuyu404.taczaddon.TACZaddon;
-import com.mafuyu404.taczaddon.init.GunSmithCraftingSessionManager;
-import com.mafuyu404.taczaddon.init.NetworkHandler;
+import com.mafuyu404.taczaddon.ModConstants;
+import com.mafuyu404.taczaddon.gunsmith.GunSmithCraftingSessionManager;
+import com.mafuyu404.taczaddon.network.ServerPolicySync;
+
 import com.tacz.guns.block.AbstractGunSmithTableBlock;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import com.tacz.guns.inventory.GunSmithTableMenu;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.common.Mod;
  * Single owner for Forge-side player/session lifecycle.
  */
 @Mod.EventBusSubscriber(
-        modid = TACZaddon.MODID,
+        modid = ModConstants.MODID,
         bus = Mod.EventBusSubscriber.Bus.FORGE
 )
 public final class ServerEvent {
@@ -38,9 +39,9 @@ public final class ServerEvent {
             return;
         }
 
-        NetworkHandler.sendServerConfig(serverPlayer);
-        NetworkHandler.sendLiberateAttachmentState(serverPlayer);
-        NetworkHandler.sendAttachmentDetailRuleState(serverPlayer);
+        ServerPolicySync.sendServerConfig(serverPlayer);
+        ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
+        ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
     }
 
     @SubscribeEvent(
@@ -141,9 +142,9 @@ public final class ServerEvent {
             GunSmithCraftingSessionManager.clearPlayerState(
                     serverPlayer.getUUID()
             );
-            NetworkHandler.sendServerConfig(serverPlayer);
-            NetworkHandler.sendLiberateAttachmentState(serverPlayer);
-            NetworkHandler.sendAttachmentDetailRuleState(serverPlayer);
+            ServerPolicySync.sendServerConfig(serverPlayer);
+            ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
+            ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
         }
     }
 
@@ -155,9 +156,9 @@ public final class ServerEvent {
             GunSmithCraftingSessionManager.clearPlayerState(
                     serverPlayer.getUUID()
             );
-            NetworkHandler.sendServerConfig(serverPlayer);
-            NetworkHandler.sendLiberateAttachmentState(serverPlayer);
-            NetworkHandler.sendAttachmentDetailRuleState(serverPlayer);
+            ServerPolicySync.sendServerConfig(serverPlayer);
+            ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
+            ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
 import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
 
 import java.util.List;
 

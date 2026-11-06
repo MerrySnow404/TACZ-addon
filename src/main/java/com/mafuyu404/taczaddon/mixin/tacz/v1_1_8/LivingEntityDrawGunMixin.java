@@ -1,6 +1,8 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.common.FastSwapService;
+import com.mafuyu404.taczaddon.compat.tacz.TaczGunClock;
+import com.mafuyu404.taczaddon.gun.FastSwapService;
+
 import com.tacz.guns.entity.shooter.LivingEntityDrawGun;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import org.spongepowered.asm.mixin.Final;
@@ -33,7 +35,7 @@ public abstract class LivingEntityDrawGunMixin {
          * configuration, never a client preference.
          */
         if (FastSwapService.serverPolicyEnabled()) {
-            this.data.drawTimestamp = System.currentTimeMillis();
+            this.data.drawTimestamp = TaczGunClock.nowMillis();
         }
     }
 }

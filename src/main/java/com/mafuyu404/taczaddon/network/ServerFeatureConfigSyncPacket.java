@@ -1,14 +1,9 @@
 package com.mafuyu404.taczaddon.network;
 
-import com.mafuyu404.taczaddon.client.ClientGunSmithPacketHandler;
-import com.mafuyu404.taczaddon.init.CommonConfig;
+import com.mafuyu404.taczaddon.config.CommonConfig;
+
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Synchronizes server-owned policy needed by client request and prediction
@@ -28,14 +23,6 @@ public final class ServerFeatureConfigSyncPacket {
         this.enableShootWhileReloading =
                 enableShootWhileReloading;
         this.enableFastSwapGun = enableFastSwapGun;
-    }
-
-    public static ServerFeatureConfigSyncPacket fromServerConfig() {
-        return new ServerFeatureConfigSyncPacket(
-                CommonConfig.getBatchCraftMax(),
-                CommonConfig.enableShootWhileReloading(),
-                CommonConfig.enableFastSwapGun()
-        );
     }
 
     public static void encode(
@@ -74,25 +61,6 @@ public final class ServerFeatureConfigSyncPacket {
                 enableShootWhileReloading,
                 enableFastSwapGun
         );
-    }
-
-    public static void handle(
-            ServerFeatureConfigSyncPacket message,
-            Supplier<NetworkEvent.Context> contextSupplier
-    ) {
-        NetworkEvent.Context context =
-                contextSupplier.get();
-
-        context.enqueueWork(() ->
-                DistExecutor.unsafeRunWhenOn(
-                        Dist.CLIENT,
-                        () -> () ->
-                                ClientGunSmithPacketHandler
-                                        .handleConfigSync(message)
-                )
-        );
-
-        context.setPacketHandled(true);
     }
 
     public int batchCraftMax() {
