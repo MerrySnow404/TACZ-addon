@@ -1,16 +1,12 @@
 package com.mafuyu404.taczaddon.network;
 
-import com.mafuyu404.taczaddon.client.ClientGunSmithPacketHandler;
-import com.mafuyu404.taczaddon.init.crafting.CraftingTransaction;
+import com.mafuyu404.taczaddon.gunsmith.CraftingTransaction;
+
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 public final class GunSmithCraftResultPacket {
     private static final int MAX_CRAFT_EXECUTIONS = 64;
@@ -86,22 +82,6 @@ public final class GunSmithCraftResultPacket {
                 outputPerCraft,
                 failure
         );
-    }
-
-    public static void handle(
-            GunSmithCraftResultPacket message,
-            Supplier<NetworkEvent.Context> contextSupplier
-    ) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() ->
-                DistExecutor.unsafeRunWhenOn(
-                        Dist.CLIENT,
-                        () -> () ->
-                                ClientGunSmithPacketHandler
-                                        .handleCraftResult(message)
-                )
-        );
-        context.setPacketHandled(true);
     }
 
     public int containerId() {

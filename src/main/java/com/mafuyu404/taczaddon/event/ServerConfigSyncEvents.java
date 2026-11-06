@@ -1,15 +1,16 @@
 package com.mafuyu404.taczaddon.event;
 
-import com.mafuyu404.taczaddon.TACZaddon;
-import com.mafuyu404.taczaddon.init.CommonConfig;
-import com.mafuyu404.taczaddon.init.NetworkHandler;
+import com.mafuyu404.taczaddon.ModConstants;
+import com.mafuyu404.taczaddon.config.CommonConfig;
+import com.mafuyu404.taczaddon.network.ServerPolicySync;
+
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 @Mod.EventBusSubscriber(
-        modid = TACZaddon.MODID,
+        modid = ModConstants.MODID,
         bus = Mod.EventBusSubscriber.Bus.MOD
 )
 public final class ServerConfigSyncEvents {
@@ -31,6 +32,6 @@ public final class ServerConfigSyncEvents {
 
         server.getPlayerList()
                 .getPlayers()
-                .forEach(NetworkHandler::sendServerConfig);
+                .forEach(ServerPolicySync::sendServerConfig);
     }
 }

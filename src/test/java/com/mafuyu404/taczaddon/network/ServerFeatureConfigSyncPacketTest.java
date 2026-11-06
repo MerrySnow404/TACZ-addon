@@ -1,7 +1,7 @@
 package com.mafuyu404.taczaddon.network;
 
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
-import com.mafuyu404.taczaddon.init.CommonConfig;
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.config.CommonConfig;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.FriendlyByteBuf;
@@ -70,14 +70,10 @@ class ServerFeatureConfigSyncPacketTest {
                 "a new connection must not inherit the previous server policy"
         );
 
-        ClientSyncedConfig.apply(
-                new ServerFeatureConfigSyncPacket(4, false, true)
-        );
+        ClientSyncedConfig.apply(4, false, true);
         assertTrue(ClientSyncedConfig.enableFastSwapGun());
 
-        ClientSyncedConfig.apply(
-                new ServerFeatureConfigSyncPacket(4, false, false)
-        );
+        ClientSyncedConfig.apply(4, false, false);
         assertFalse(
                 ClientSyncedConfig.enableFastSwapGun(),
                 "a server that disables fast swap must disable prediction"

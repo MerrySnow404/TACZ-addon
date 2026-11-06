@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "package": "com.mafuyu404.taczaddon.mixin",
   "refmap": "taczaddon.refmap.json",
-  "plugin": "com.mafuyu404.taczaddon.compat.tacz.TaczAddonMixinPlugin",
+  "plugin": "com.mafuyu404.taczaddon.bootstrap.TaczAddonMixinPlugin",
   "mixins": [
     "InventoryAccessor",
     "SmithingMenuMixin",
@@ -23,6 +23,8 @@
     "tacz.v1_1_8.ModernKineticGunScriptAPIMixin"
   ],
   "client": [
+    "tacz.v1_2_0.AimInputMixin",
+    "tacz.v1_2_0.ClientAmmoCountMixin",
     "beyond.TaczAmmoCacheMixin",
     "AbstractContainerScreenMixin",
     "InventoryScreenMixin",

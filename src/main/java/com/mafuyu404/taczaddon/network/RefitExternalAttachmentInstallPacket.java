@@ -1,13 +1,10 @@
 package com.mafuyu404.taczaddon.network;
 
-import com.mafuyu404.taczaddon.common.RefitExternalInstallService;
-import com.mafuyu404.taczaddon.init.crafting.RefitSourceLocator;
+import com.mafuyu404.taczaddon.storage.api.RefitSourceLocator;
+
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public final class RefitExternalAttachmentInstallPacket {
     private final RefitSourceLocator locator;
@@ -59,20 +56,6 @@ public final class RefitExternalAttachmentInstallPacket {
                 gunSlotIndex,
                 snapshotRequestId
         );
-    }
-
-    public static void handle(
-            RefitExternalAttachmentInstallPacket message,
-            Supplier<NetworkEvent.Context> contextSupplier
-    ) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() ->
-                RefitExternalInstallService.handle(
-                        message,
-                        context.getSender()
-                )
-        );
-        context.setPacketHandled(true);
     }
 
     public RefitSourceLocator locator() {

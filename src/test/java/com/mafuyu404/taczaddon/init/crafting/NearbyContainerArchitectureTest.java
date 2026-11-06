@@ -18,12 +18,10 @@ class NearbyContainerArchitectureTest {
     void genericResolverOwnsTheOnlyNearbyIteration()
             throws IOException {
         String resolver = read(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "NearbyInventorySourceResolver.java"
+                "src/main/java/com/mafuyu404/taczaddon/storage/NearbyInventorySourceResolver.java"
         );
         String gunsmith = read(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSources.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSources.java"
         );
 
         assertTrue(resolver.contains("level.isLoaded(pos)"));
@@ -46,16 +44,13 @@ class NearbyContainerArchitectureTest {
     void standardTableSupportNeverUsesBlockIdWhitelists()
             throws IOException {
         String sessionManager = read(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSessionManager.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSessionManager.java"
         );
         String gunsmith = read(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSources.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSources.java"
         );
         String serverEvent = read(
-                "src/main/java/com/mafuyu404/taczaddon/event/"
-                        + "ServerEvent.java"
+                "src/main/java/com/mafuyu404/taczaddon/event/ServerEvent.java"
         );
 
         for (String forbidden : new String[] {
@@ -77,17 +72,14 @@ class NearbyContainerArchitectureTest {
         ));
 
         assertTrue(Files.isRegularFile(PROJECT_ROOT.resolve(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "WorkbenchAnchorProvider.java"
+                "src/main/java/com/mafuyu404/taczaddon/storage/api/WorkbenchAnchorProvider.java"
         )));
         assertTrue(Files.isRegularFile(PROJECT_ROOT.resolve(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "WorkbenchAnchorRegistry.java"
+                "src/main/java/com/mafuyu404/taczaddon/storage/WorkbenchAnchorRegistry.java"
         )));
 
         String provider = read(
-                "src/main/java/com/mafuyu404/taczaddon/compat/tacz/"
-                        + "TaczWorkbenchAnchorProvider.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/TaczWorkbenchAnchorProvider.java"
         );
         assertTrue(provider.contains("GunSmithTableMenu"));
         assertTrue(provider.contains("session.getTablePos()"));
@@ -97,8 +89,7 @@ class NearbyContainerArchitectureTest {
     void configAndDependencyMetadataUseSharedSemantics()
             throws IOException {
         String config = read(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "CommonConfig.java"
+                "src/main/java/com/mafuyu404/taczaddon/config/CommonConfig.java"
         );
         assertTrue(config.contains("enableNearbyContainerSources"));
         assertTrue(config.contains("getNearbyContainerScanRadius"));
@@ -115,16 +106,13 @@ class NearbyContainerArchitectureTest {
 
         String gradle = read("build.gradle");
         assertTrue(gradle.contains(
-                "implementation fg.deobf(\"curse.maven:"
-                        + "leawind-third-person-930880:8602826\")"
+                "implementation fg.deobf(\"curse.maven:leawind-third-person-930880:8602826\")"
         ));
         assertTrue(gradle.contains(
-                "compileOnly fg.deobf(\"maven.modrinth:"
-                        + "LIqveQm1:1.5.0-beta+forge-1.20.1\")"
+                "compileOnly fg.deobf(\"maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1\")"
         ));
         assertFalse(gradle.contains(
-                "implementation fg.deobf(\"maven.modrinth:"
-                        + "LIqveQm1"
+                "implementation fg.deobf(\"maven.modrinth:LIqveQm1"
         ));
     }
 

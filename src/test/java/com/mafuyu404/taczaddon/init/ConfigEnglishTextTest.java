@@ -14,11 +14,10 @@ class ConfigEnglishTextTest {
     void forgeConfigSourceTextContainsNoCjkCharacters()
             throws IOException {
         assertNoCjk(
-                "src/main/java/com/mafuyu404/taczaddon/init/Config.java"
+                "src/main/java/com/mafuyu404/taczaddon/config/Config.java"
         );
         assertNoCjk(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "CommonConfig.java"
+                "src/main/java/com/mafuyu404/taczaddon/config/CommonConfig.java"
         );
     }
 

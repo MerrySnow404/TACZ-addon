@@ -4,8 +4,8 @@ import com.tacz.guns.crafting.GunSmithTableRecipe;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public interface TaczGunSmithScreenAccess {
     @Nullable

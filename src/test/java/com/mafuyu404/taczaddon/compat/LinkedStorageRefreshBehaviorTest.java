@@ -42,7 +42,7 @@ public class LinkedStorageRefreshBehaviorTest {
     public static void refresh(Player player) { requests++; }
 
     @Test void refreshUsesInstalledRevisionAndMissingRevisionRequestsFullSnapshot() throws Exception {
-        Method method = replay("com/mafuyu404/taczaddon/compat/SophisticatedLinkedStorageCompat326",
+        Method method = replay("com/mafuyu404/taczaddon/compat/sophisticated/SophisticatedLinkedStorageCompat326",
                 "refreshSnapshot", node -> {
                     for (var insn : node.instructions.toArray()) {
                         if (insn instanceof MethodInsnNode call && call.name.equals("getRevision")) {
@@ -69,7 +69,8 @@ public class LinkedStorageRefreshBehaviorTest {
     }
 
     @Test void onlyGunHeldTicksProbeEveryFortyTicksAndNoGunResetsTimer() throws Exception {
-        Method method = replay("com/mafuyu404/taczaddon/event/ClientEvent",
+        com.mafuyu404.taczaddon.testutil.MinecraftTestBootstrap.prepare();
+        Method method = replay("com/mafuyu404/taczaddon/client/ammo/BackpackHudState",
                 "taczaddon$tickLinkedBackpackRefresh", node -> {
                     for (var insn : node.instructions.toArray()) {
                         if (insn instanceof FieldInsnNode field && field.name.equals("taczaddon$linkedTicksUntilSync")) {

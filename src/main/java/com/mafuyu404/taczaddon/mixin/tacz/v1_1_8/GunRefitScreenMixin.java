@@ -1,15 +1,16 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunRefitScreenAccess;
-import com.mafuyu404.taczaddon.client.LiberatedRefitClientService;
-import com.mafuyu404.taczaddon.client.RefitDisplayInventory;
-import com.mafuyu404.taczaddon.client.RefitExternalSourceState;
-import com.mafuyu404.taczaddon.common.LiberatedRefitService;
-import com.mafuyu404.taczaddon.common.RefitSourceResolver;
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
-import com.mafuyu404.taczaddon.init.NetworkHandler;
-import com.mafuyu404.taczaddon.init.crafting.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.client.refit.GunRefitScreenAccess;
+import com.mafuyu404.taczaddon.client.refit.LiberatedRefitClientService;
+import com.mafuyu404.taczaddon.client.refit.RefitDisplayInventory;
+import com.mafuyu404.taczaddon.client.refit.RefitExternalSourceState;
+import com.mafuyu404.taczaddon.network.NetworkHandler;
 import com.mafuyu404.taczaddon.network.RefitExternalAttachmentInstallPacket;
+import com.mafuyu404.taczaddon.refit.LiberatedRefitService;
+import com.mafuyu404.taczaddon.refit.RefitSourceResolver;
+
 import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.client.gui.GunRefitScreen;

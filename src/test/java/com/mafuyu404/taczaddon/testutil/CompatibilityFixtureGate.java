@@ -39,9 +39,7 @@ public final class CompatibilityFixtureGate {
             );
         }
         fail(message
-                + "\nReal upstream ABI verification is mandatory."
-                + "\nResolve the fixtures with: gradlew resolveCompatibilityFixtures"
-                + "\n(Use -D" + ALLOW_MISSING_PROPERTY
+                + "\nReal upstream ABI verification is mandatory.\nResolve the fixtures with: gradlew resolveCompatibilityFixtures\n(Use -D" + ALLOW_MISSING_PROPERTY
                 + "=true only for local IDE runs.)");
     }
 }

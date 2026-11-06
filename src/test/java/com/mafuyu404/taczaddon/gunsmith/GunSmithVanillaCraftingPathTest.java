@@ -24,26 +24,26 @@ class GunSmithVanillaCraftingPathTest {
     );
 
     private static final List<String> RESTORED_CLASSES = List.of(
-            "client/ClientGunSmithPacketHandler.java",
-            "client/GunSmithCraftBridgeState.java",
-            "client/GunSmithExternalSourceState.java",
-            "client/GunSmithCompatibilityService.java",
-            "init/GunSmithCraftingSessionManager.java",
-            "init/GunSmithCraftingSources.java",
-            "init/GunSmithDisplayInventory.java",
-            "init/crafting/ContainerItemSource.java",
-            "init/crafting/CraftingItemSource.java",
-            "init/crafting/CraftingSourceKey.java",
-            "init/crafting/CraftingTransaction.java",
-            "init/crafting/GunSmithCraftScreenAccess.java",
-            "init/crafting/GunSmithSourceScreenAccess.java",
-            "init/crafting/PlayerInventorySource.java",
+            "client/gunsmith/ClientGunSmithPacketHandler.java",
+            "client/gunsmith/GunSmithCraftBridgeState.java",
+            "client/gunsmith/GunSmithExternalSourceState.java",
+            "client/gunsmith/GunSmithCompatibilityService.java",
+            "gunsmith/GunSmithCraftingSession.java",
+            "gunsmith/GunSmithCraftingSources.java",
+            "client/gunsmith/GunSmithDisplayInventory.java",
+            "storage/ContainerItemSource.java",
+            "storage/api/CraftingItemSource.java",
+            "storage/api/CraftingSourceKey.java",
+            "gunsmith/CraftingTransaction.java",
+            "client/gunsmith/GunSmithCraftScreenAccess.java",
+            "client/gunsmith/GunSmithSourceScreenAccess.java",
+            "storage/PlayerInventorySource.java",
             "mixin/tacz/v1_1_8/GunSmithTableCraftBridgeMixin.java",
             "mixin/tacz/v1_1_8/GunSmithTableMenuAccess.java",
             "mixin/tacz/v1_1_8/GunSmithTableSourceViewMixin.java",
-            "network/GunSmithCraftRequestPacket.java",
+            "network/server/GunSmithCraftRequestHandler.java",
             "network/GunSmithCraftResultPacket.java",
-            "network/GunSmithSourceRefreshRequestPacket.java",
+            "network/server/GunSmithSourceRefreshRequestHandler.java",
             "network/GunSmithSourceSnapshotPacket.java"
     );
 
@@ -53,7 +53,7 @@ class GunSmithVanillaCraftingPathTest {
         String mixins = readProjectFile(
                 "src/main/resources/taczaddon.mixins.json"
         );
-        String removedMixin = "GunSmithTable" + "BlockEntityMixin";
+        String removedMixin = "GunSmithTableBlockEntityMixin";
 
         assertFalse(
                 mixins.contains(removedMixin),
@@ -73,9 +73,7 @@ class GunSmithVanillaCraftingPathTest {
         );
 
         String bridge = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "GunSmithTableCraftBridgeMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunSmithTableCraftBridgeMixin.java"
         );
         assertFalse(bridge.contains("lambda$addCraftButton$5"));
         assertTrue(bridge.contains("method = \"addCraftButton()V\""));
@@ -86,13 +84,11 @@ class GunSmithVanillaCraftingPathTest {
                 bridge.contains(
                         "this.taczaddon$craftState.requestCraft("
                 ),
-                "the screen Mixin must call the legacy void ABI entry "
-                        + "point that Beyond Integration intercepts"
+                "the screen Mixin must call the legacy void ABI entry point that Beyond Integration intercepts"
         );
         assertFalse(
                 bridge.contains("tryRequestCraft("),
-                "the screen Mixin must not bypass the compatibility "
-                        + "entry point"
+                "the screen Mixin must not bypass the compatibility entry point"
         );
     }
 
@@ -100,9 +96,7 @@ class GunSmithVanillaCraftingPathTest {
     void browseMemoryRestoresOnceAndKeepsPagesIndependent()
             throws IOException {
         String browseMixin = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "GunSmithTableBrowseMemoryMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunSmithTableBrowseMemoryMixin.java"
         );
         assertFalse(browseMixin.contains("taczaddon$saveBeforeReinit"));
         assertFalse(browseMixin.contains("taczaddon$browseStateRestored"));
@@ -117,8 +111,7 @@ class GunSmithVanillaCraftingPathTest {
         ));
 
         String service = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/client/"
-                        + "GunSmithCompatibilityService.java"
+                "src/main/java/com/mafuyu404/taczaddon/client/gunsmith/GunSmithCompatibilityService.java"
         );
         assertFalse(service.contains("typePageFor"));
         assertFalse(service.contains("savedRecipeIndex / 6"));
@@ -128,16 +121,14 @@ class GunSmithVanillaCraftingPathTest {
     void gunsmithSessionUsesServerEventCorrelationWithoutCreateMenuMixin()
             throws IOException {
         String manager = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSessionManager.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSession.java"
         );
         String serverEvent = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/event/"
-                        + "ServerEvent.java"
+                "src/main/java/com/mafuyu404/taczaddon/event/ServerEvent.java"
         );
-        String removedInjection = "taczaddon$" + "createCraftingSession";
-        String productionMenuMethod = "m_" + "7208_";
-        String developmentMenuMethod = "create" + "Menu";
+        String removedInjection = "taczaddon$createCraftingSession";
+        String productionMenuMethod = "m_7208_";
+        String developmentMenuMethod = "createMenu";
 
         assertFalse(manager.contains(removedInjection));
         assertFalse(manager.contains(productionMenuMethod));
@@ -160,8 +151,7 @@ class GunSmithVanillaCraftingPathTest {
     void clientSnapshotRefreshIsThrottledAndRequestIdSafe()
             throws IOException {
         String state = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/client/"
-                        + "GunSmithExternalSourceState.java"
+                "src/main/java/com/mafuyu404/taczaddon/client/gunsmith/GunSmithExternalSourceState.java"
         );
 
         assertTrue(state.contains("REFRESH_INTERVAL_TICKS = 30"));
@@ -171,17 +161,14 @@ class GunSmithVanillaCraftingPathTest {
         assertTrue(state.contains("trackedContainerId"));
 
         String sourceView = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "GunSmithTableSourceViewMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunSmithTableSourceViewMixin.java"
         );
         assertTrue(sourceView.contains("getPlayerIngredientCount("));
         assertFalse(sourceView.contains("@ModifyVariable"));
         assertFalse(sourceView.contains("@At(\"STORE\")"));
 
         String containerScreen = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "AbstractContainerScreenMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/AbstractContainerScreenMixin.java"
         );
         assertTrue(containerScreen.contains("containerTick"));
         assertTrue(containerScreen.contains("instanceof GunSmithTableScreen"));
@@ -191,16 +178,14 @@ class GunSmithVanillaCraftingPathTest {
     void serverCraftStillUsesLiveSourcesAfterClientSnapshot()
             throws IOException {
         String request = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/network/"
-                        + "GunSmithCraftRequestPacket.java"
+                "src/main/java/com/mafuyu404/taczaddon/network/server/GunSmithCraftRequestHandler.java"
         );
         assertTrue(request.contains("session.validate("));
         assertTrue(request.contains("GunSmithCraftingSources.resolve("));
         assertTrue(request.contains("CraftingTransaction.execute("));
 
         String transaction = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "CraftingTransaction.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/CraftingTransaction.java"
         );
         assertTrue(transaction.contains("player.isCreative()"));
         assertTrue(transaction.contains("transaction.commit()"));
@@ -211,8 +196,7 @@ class GunSmithVanillaCraftingPathTest {
     void transactionRollbackAndPostCommitSyncAreFailureResilient()
             throws IOException {
         String transaction = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "CraftingTransaction.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/CraftingTransaction.java"
         );
 
         assertTrue(transaction.contains(
@@ -245,8 +229,7 @@ class GunSmithVanillaCraftingPathTest {
     @Test
     void containerReaderDisablesOnlyNearbySources() throws IOException {
         String config = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "CommonConfig.java"
+                "src/main/java/com/mafuyu404/taczaddon/config/CommonConfig.java"
         );
         assertTrue(config.contains(
                 "enableNearbyContainerSources"
@@ -256,8 +239,7 @@ class GunSmithVanillaCraftingPathTest {
         ));
 
         String sources = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSources.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSources.java"
         );
         assertTrue(sources.contains(
                 "if (CommonConfig.enableContainerReader())"
@@ -267,9 +249,7 @@ class GunSmithVanillaCraftingPathTest {
         ));
 
         String bridge = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "GunSmithTableCraftBridgeMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunSmithTableCraftBridgeMixin.java"
         );
         assertTrue(bridge.contains("GunSmithCraftBridgeState"));
     }
@@ -277,16 +257,13 @@ class GunSmithVanillaCraftingPathTest {
     @Test
     void deadRestorationLeftoversAreRemoved() throws IOException {
         String sources = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSources.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSources.java"
         );
         String transaction = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "CraftingTransaction.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/CraftingTransaction.java"
         );
         String sourceKey = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "CraftingSourceKey.java"
+                "src/main/java/com/mafuyu404/taczaddon/storage/api/CraftingSourceKey.java"
         );
 
         assertFalse(sources.contains("ClientFeatureConfigPacketHandler"));
@@ -302,8 +279,7 @@ class GunSmithVanillaCraftingPathTest {
     void sourceRevisionIsDocumentedAsStructuralOnly()
             throws IOException {
         String session = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSessionManager.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSession.java"
         );
         assertTrue(session.contains(
                 "Structural/addon-owned mutation revision only"
@@ -341,8 +317,7 @@ class GunSmithVanillaCraftingPathTest {
     void packetIdsHaveTheirStableSemanticAssignments()
             throws IOException {
         String networkHandler = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "NetworkHandler.java"
+                "src/main/java/com/mafuyu404/taczaddon/bootstrap/NetworkRegistration.java"
         );
 
         assertTrue(networkHandler.contains("ID_ATTACHMENT_DETAIL_RULE_STATE = 13"));
@@ -350,7 +325,7 @@ class GunSmithVanillaCraftingPathTest {
          * 2.12 adds carried-backpack identities to refit locators; every
          * existing packet ID stays unchanged.
          */
-        assertTrue(networkHandler.contains("PROTOCOL = \"2.12\""));
+        assertTrue(readProjectFile("src/main/java/com/mafuyu404/taczaddon/network/NetworkHandler.java").contains("PROTOCOL = \"2.12\""));
         assertPacketId(networkHandler, "ID_SWITCH_GUN", 1);
         assertPacketId(networkHandler, "ID_AMMO_BOX_COLLECT", 2);
         assertPacketId(networkHandler, "ID_SERVER_FEATURE_CONFIG", 3);
@@ -376,8 +351,7 @@ class GunSmithVanillaCraftingPathTest {
     void addonRequestRetainsTaCZRecipeAuthorization()
             throws IOException {
         String request = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/network/"
-                        + "GunSmithCraftRequestPacket.java"
+                "src/main/java/com/mafuyu404/taczaddon/network/server/GunSmithCraftRequestHandler.java"
         );
 
         assertTrue(request.contains("taczaddon$invokeGetRecipe("));
@@ -390,8 +364,7 @@ class GunSmithVanillaCraftingPathTest {
     void sourceDiscoveryKeepsPlayerFirstAndLoadedDeterministicContainers()
             throws IOException {
         String sources = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSources.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSources.java"
         );
 
         int playerSource = sources.indexOf("new PlayerInventorySource(player)");
@@ -401,8 +374,7 @@ class GunSmithVanillaCraftingPathTest {
         assertTrue(playerSource >= 0 && nearbyScan > playerSource);
 
         String resolver = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/crafting/"
-                        + "NearbyInventorySourceResolver.java"
+                "src/main/java/com/mafuyu404/taczaddon/storage/NearbyInventorySourceResolver.java"
         );
         assertTrue(resolver.contains("BlockPos.betweenClosed(min, max)"));
         assertTrue(resolver.contains(

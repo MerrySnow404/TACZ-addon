@@ -1,7 +1,8 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithCompatibilityService;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCompatibilityService;
 import com.mafuyu404.taczaddon.compat.tacz.api.TaczGunSmithScreenAccess;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;
@@ -17,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Remembers browse position without depending on synthetic button-lambda

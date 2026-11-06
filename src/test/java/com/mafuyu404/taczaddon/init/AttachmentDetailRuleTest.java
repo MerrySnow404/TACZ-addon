@@ -1,5 +1,9 @@
 package com.mafuyu404.taczaddon.init;
 
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.config.Config;
+import com.mafuyu404.taczaddon.rule.RuleRegistry;
+
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.mafuyu404.taczaddon.testutil.MinecraftTestBootstrap;
 import net.minecraft.server.MinecraftServer;
@@ -61,8 +65,8 @@ public class AttachmentDetailRuleTest {
     }
 
     @Test void ruleCallbackBroadcastsCurrentValueToEveryConnectedPlayer() throws Exception {
-        ClassNode original = read("com/mafuyu404/taczaddon/init/RuleRegistry");
-        List<MethodNode> methods = original.methods.stream().filter(m -> m.name.contains("onShowAttachmentDetailChanged")).toList();
+        ClassNode original = read("com/mafuyu404/taczaddon/network/ServerPolicySync");
+        List<MethodNode> methods = original.methods.stream().filter(m -> m.name.contains("broadcastAttachmentDetail")).toList();
         assertEquals(2, methods.size());
         for (MethodNode method : methods) {
             method.access = Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC;
@@ -81,10 +85,10 @@ public class AttachmentDetailRuleTest {
                 }
             }
         }
-        Method callback = define(methods).getMethod("onShowAttachmentDetailChanged", MinecraftServer.class, GameRules.BooleanValue.class);
+        Method callback = define(methods).getMethod("broadcastAttachmentDetail", MinecraftServer.class, boolean.class);
         var rule = new GameRules().getRule(RuleRegistry.SHOW_ATTACHMENT_DETAIL);
         for (boolean value : new boolean[]{true, false}) {
-            sent.clear(); rule.set(value, null); callback.invoke(null, null, rule);
+            sent.clear(); rule.set(value, null); callback.invoke(null, null, value);
             assertEquals(List.of(value, value, value), sent);
         }
     }
@@ -105,10 +109,12 @@ public class AttachmentDetailRuleTest {
         String gateBody = tooltip.substring(gate, tooltip.indexOf("}", gate));
         assertTrue(gateBody.contains("Config.SHOW_ATTACHMENT_ATTRIBUTE.get()"));
         assertTrue(gateBody.contains("ClientSyncedConfig.showAttachmentDetail()"));
-        String rule = Files.readString(root.resolve("init/RuleRegistry.java"));
+        String rule = Files.readString(root.resolve("rule/RuleRegistry.java"));
         assertTrue(rule.contains("GameRules.Category.PLAYER"));
         String packet = Files.readString(root.resolve("network/AttachmentDetailRuleStatePacket.java"));
-        for (String token : new String[]{"FriendlyByteBuf", "enqueueWork", "DistExecutor", "setPacketHandled(true)"}) assertTrue(packet.contains(token));
+        assertTrue(packet.contains("FriendlyByteBuf"));
+        String dispatch = Files.readString(root.resolve("network/ClientPacketDispatch.java"));
+        for (String token : new String[]{"enqueueWork", "setPacketHandled(true)"}) assertTrue(dispatch.contains(token));
         assertTrue(Files.readString(root.resolve("event/ClientSyncedConfigEvents.java")).contains("resetToSafeDefaults()"));
     }
 

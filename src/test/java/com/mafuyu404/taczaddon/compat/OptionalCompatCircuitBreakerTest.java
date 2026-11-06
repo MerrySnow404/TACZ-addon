@@ -1,5 +1,8 @@
 package com.mafuyu404.taczaddon.compat;
 
+import com.mafuyu404.taczaddon.compat.camera.PerspectiveApiCompat;
+import com.mafuyu404.taczaddon.compat.camera.ShoulderSurfing5Compat;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 

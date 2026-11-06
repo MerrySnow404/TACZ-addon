@@ -1,6 +1,8 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
 import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
+
 import com.mojang.logging.LogUtils;
 import org.slf4j.Logger;
 
@@ -152,6 +154,9 @@ public final class TaczCompatibility {
         if (!sideAllows(binding)) {
             return false;
         }
+        if (!isAvailable(binding.feature())) {
+            return false;
+        }
 
         for (TaczFeature dependency : binding.dependencies()) {
             if (!isAvailable(dependency)) {
@@ -166,7 +171,7 @@ public final class TaczCompatibility {
             ).passed();
         }
 
-        if (profile != TaczCompatibilityProfile.TACZ_1_1_8_HOTFIX) {
+        if (profile == TaczCompatibilityProfile.UNKNOWN) {
             return false;
         }
         return binding.contract() == null
@@ -336,7 +341,7 @@ public final class TaczCompatibility {
         }
 
         FeatureContract contract =
-                TaczContractRegistry.contractFor(feature);
+                TaczContractRegistry.contractFor(feature, profile);
         if (contract == null || contract.classes().isEmpty()) {
             return new ResolvedState(
                     TaczFeatureStatus.SUPPORTED,

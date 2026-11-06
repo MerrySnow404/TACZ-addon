@@ -1,11 +1,13 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.client.GunSmithIngredientScreenAccess;
-import com.mafuyu404.taczaddon.client.GunSmithPropertyFilterAccess;
-import com.mafuyu404.taczaddon.common.ItemRelationHelper;
-import com.mafuyu404.taczaddon.compat.SophisticatedStorageClientCompat;
-import com.mafuyu404.taczaddon.init.Config;
-import com.mafuyu404.taczaddon.init.crafting.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCraftScreenAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithIngredientScreenAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithPropertyFilterAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedStorageClientCompat;
+import com.mafuyu404.taczaddon.config.Config;
+import com.mafuyu404.taczaddon.recipe.ItemRelationHelper;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -59,8 +61,7 @@ public abstract class AbstractContainerScreenMixin extends Screen {
         }
         if (screen instanceof GunSmithTableScreen
                 && screen
-                instanceof com.mafuyu404.taczaddon.init.crafting
-                .GunSmithCraftScreenAccess craftAccess) {
+                instanceof GunSmithCraftScreenAccess craftAccess) {
             craftAccess.taczaddon$tickCraftState();
         }
     }

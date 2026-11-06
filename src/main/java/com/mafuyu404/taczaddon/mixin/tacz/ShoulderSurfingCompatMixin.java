@@ -1,7 +1,8 @@
 package com.mafuyu404.taczaddon.mixin.tacz;
 
-import com.mafuyu404.taczaddon.compat.ShoulderSurfing5Compat;
-import com.mafuyu404.taczaddon.compat.ShoulderSurfingDispatch;
+import com.mafuyu404.taczaddon.compat.camera.ShoulderSurfing5Compat;
+import com.mafuyu404.taczaddon.compat.camera.ShoulderSurfingDispatch;
+
 import com.tacz.guns.compat.shouldersurfing.ShoulderSurfingCompat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

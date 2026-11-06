@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.common;
 
+import com.mafuyu404.taczaddon.refit.RefitExternalInstallCommitSequence;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,8 +20,7 @@ class RefitExternalInstallServiceArchitectureTest {
             throws IOException {
         String service = Files.readString(
                 Path.of(
-                        "src/main/java/com/mafuyu404/taczaddon/common/"
-                                + "RefitExternalInstallService.java"
+                        "src/main/java/com/mafuyu404/taczaddon/refit/RefitExternalInstallService.java"
                 ),
                 StandardCharsets.UTF_8
         );
@@ -45,8 +46,7 @@ class RefitExternalInstallServiceArchitectureTest {
          */
         String transaction = Files.readString(
                 Path.of(
-                        "src/main/java/com/mafuyu404/taczaddon/common/"
-                                + "RefitExternalInstallTransaction.java"
+                        "src/main/java/com/mafuyu404/taczaddon/refit/RefitExternalInstallTransaction.java"
                 ),
                 StandardCharsets.UTF_8
         ).replaceAll("\\s+", "");
@@ -79,8 +79,7 @@ class RefitExternalInstallServiceArchitectureTest {
         );
         assertTrue(
                 restoreCheck >= 0 && returnExtraction > restoreCheck,
-                "the extracted item may only be returned after the gun "
-                        + "state was verified as restored"
+                "the extracted item may only be returned after the gun state was verified as restored"
         );
 
         /*
@@ -137,13 +136,11 @@ class RefitExternalInstallServiceArchitectureTest {
                 normalized.contains(
                         "RefitExternalInstallCommitSequence.complete("
                 ),
-                "the successful path must cross one explicit ownership "
-                        + "commit sequence"
+                "the successful path must cross one explicit ownership commit sequence"
         );
         assertTrue(
                 normalized.contains("newPostCommitSteps("),
-                "post-commit effects must be isolated from the "
-                        + "transaction host"
+                "post-commit effects must be isolated from the transaction host"
         );
 
         int postCommitStart = service.indexOf(
@@ -164,8 +161,7 @@ class RefitExternalInstallServiceArchitectureTest {
                         && postCommit.contains(
                                 "AttachmentPropertyManager.postChangeEvent("
                         ),
-                "ownership finalization must live before property-cache "
-                        + "post-commit effects"
+                "ownership finalization must live before property-cache post-commit effects"
         );
         assertFalse(
                 postCommit.contains(
@@ -179,8 +175,7 @@ class RefitExternalInstallServiceArchitectureTest {
                                 "returnExtractionToSource("
                         )
                         || postCommit.contains("installAttachment("),
-                "post-commit handling must not repeat extraction, install "
-                        + "or compensation"
+                "post-commit handling must not repeat extraction, install or compensation"
         );
     }
 
@@ -247,8 +242,7 @@ class RefitExternalInstallServiceArchitectureTest {
                         "refresh"
                 ),
                 calls,
-                "post-commit failures must not repeat ownership or "
-                        + "transaction work"
+                "post-commit failures must not repeat ownership or transaction work"
         );
         assertEquals(2, failures.size());
         assertEquals(
@@ -274,8 +268,7 @@ class RefitExternalInstallServiceArchitectureTest {
                         steps,
                         failure -> {
                             throw new AssertionError(
-                                    "ownership failure is a pre-boundary "
-                                            + "failure",
+                                    "ownership failure is a pre-boundary failure",
                                     failure
                             );
                         }
@@ -284,8 +277,7 @@ class RefitExternalInstallServiceArchitectureTest {
         assertEquals(
                 List.of("ownership"),
                 calls,
-                "no post-commit effect may run before ownership "
-                        + "finalization succeeds"
+                "no post-commit effect may run before ownership finalization succeeds"
         );
     }
 

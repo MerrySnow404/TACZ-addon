@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.ClientShootWhileReloadService;
+import com.mafuyu404.taczaddon.client.gun.ClientShootWhileReloadService;
+
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.client.gameplay.LocalPlayerDataHolder;

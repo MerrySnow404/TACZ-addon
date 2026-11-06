@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.BetterMelee;
+import com.mafuyu404.taczaddon.client.gun.BetterMelee;
+
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.client.gameplay.LocalPlayerShoot;
 import net.minecraft.client.player.LocalPlayer;

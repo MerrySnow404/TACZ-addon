@@ -173,9 +173,11 @@ def compatibilityFixtureSpecs = [
         [group: "shouldersurfing", generation: "v5.previous", kind: "shouldersurfing",
          version: "5.1.1", artifact: "curse.maven:shoulder-surfing-reloaded-243190:8950312"],
         [group: "tacz", generation: "hotfix", kind: "tacz",
-         version: "1.1.8-hotfix", artifact: "curse.maven:timeless-and-classics-zero-1028108:8141310"],
+         version: "1.1.8-hotfix", artifact: "maven.modrinth:SzzJttH8:yOVIzIJR"],
         [group: "tacz", generation: "hotfix2", kind: "tacz",
          version: "1.1.8-hotfix2", artifact: "maven.modrinth:SzzJttH8:AzCBJlex"],
+        [group: "tacz", generation: "1.2.0", kind: "tacz",
+         version: "1.2.0", artifact: "maven.modrinth:SzzJttH8:QGCbNkTy"],
         [group: "sophisticated", generation: "storage.current", kind: "storage",
          version: "1.5.13.2212", artifact: "maven.modrinth:hMlaZH8f:EEqDW5P2"],
         // ---------------- Sophisticated 3.24 ordinary-only generations
@@ -505,7 +507,7 @@ dependencies {
     runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:EEqDW5P2")
 
 
-    implementation fg.deobf("maven.modrinth:SzzJttH8:AzCBJlex")
+    implementation fg.deobf("maven.modrinth:SzzJttH8:QGCbNkTy")
     implementation fg.deobf("curse.maven:create-storage-neo-forge-1281770:8712044")
     // Create Storage requires Create 6.0.7+. Release-equivalent development artifacts.
     implementation(fg.deobf("com.simibubi.create:create-1.20.1:6.0.8-289:slim") { transitive = false })
@@ -546,6 +548,18 @@ tasks.named("test", Test).configure {
     useJUnitPlatform()
 
     dependsOn resolveCompatibilityFixtures
+
+    inputs.dir(compatibilityFixtureRoot)
+    // Forge discovers nested libraries at launch; plain JUnit needs the clock library explicitly.
+    doFirst {
+        def clockFixture = compatibilityFixtureRoot.get().file("tacz/1.2.0/tacz.jar").asFile
+        if (!clockFixture.isFile()) return // Explicit local allowMissingFixtures mode.
+        def modelLibrary = zipTree(clockFixture).matching {
+            include "META-INF/jarjar/simplebedrockmodel-*.jar"
+        }
+        classpath += modelLibrary
+        classpath += zipTree(modelLibrary.singleFile).matching { include "META-INF/jarjar/mae-*.jar" }
+    }
 
     /*
      * Never rely on the test process working directory.

@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
 import com.mafuyu404.taczaddon.compat.tacz.api.TaczGunSmithScreenAccess;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -8,8 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Version-specific structural access to TaCZ GunSmithTableScreen state.

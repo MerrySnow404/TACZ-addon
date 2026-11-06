@@ -29,8 +29,8 @@ class OptionalCompatibilityIsolationTest {
                     throw new ClassNotFoundException(name);
                 }
                 if (!name.startsWith(PACKAGE)) return super.loadClass(name, resolve);
-                assertFalse(name.endsWith("Inner") || name.equals(PACKAGE + "JeiPlugin")
-                        || name.equals(PACKAGE + "SophisticatedLinkedStorageCompat326"),
+                assertFalse(name.endsWith("Inner") || name.equals("com.mafuyu404.taczaddon.compat.jei.JeiPlugin")
+                        || name.equals("com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedLinkedStorageCompat326"),
                         "Absent integration must not load backend: " + name);
                 synchronized (getClassLoadingLock(name)) {
                     Class<?> loaded = findLoadedClass(name);
@@ -69,7 +69,7 @@ class OptionalCompatibilityIsolationTest {
         for (String name : List.of("CuriosCompat", "JeiCompat", "ShoulderSurfing5Compat",
                 "PerspectiveApiCompat", "SophisticatedBackpacksCompat", "SophisticatedStorageClientCompat",
                 "BeyondIntegrationCompat", "BeyondAmmoClientCompat", "SophisticatedBlockStorageCompat", "CreateStorageCompat")) {
-            Class<?> facade = Class.forName(PACKAGE + name, true, loader);
+            Class<?> facade = Class.forName(com.mafuyu404.taczaddon.testutil.CompatibilityClassNames.compatClassName(name), true, loader);
             for (var method : facade.getDeclaredMethods()) {
                 if (java.lang.reflect.Modifier.isPublic(method.getModifiers())) {
                     // Null object arguments exercise the absent-mod path without bootstrapping a game.

@@ -1,16 +1,18 @@
 package com.mafuyu404.taczaddon.event;
 
-import com.mafuyu404.taczaddon.TACZaddon;
-import com.mafuyu404.taczaddon.common.BetterGunSmithTable;
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
-import com.mafuyu404.taczaddon.init.DataStorage;
+import com.mafuyu404.taczaddon.ModConstants;
+import com.mafuyu404.taczaddon.client.ammo.BackpackHudState;
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.client.gunsmith.BetterGunSmithTable;
+import com.mafuyu404.taczaddon.client.input.GunSwitchInput;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(
-        modid = TACZaddon.MODID,
+        modid = ModConstants.MODID,
         value = Dist.CLIENT,
         bus = Mod.EventBusSubscriber.Bus.FORGE
 )
@@ -24,6 +26,7 @@ public final class ClientSyncedConfigEvents {
     ) {
         ClientSyncedConfig.resetToSafeDefaults();
         BetterGunSmithTable.clearAllBrowseStates();
-        DataStorage.clear();
+        GunSwitchInput.reset();
+        BackpackHudState.reset();
     }
 }

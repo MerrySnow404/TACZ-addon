@@ -44,23 +44,16 @@ class SyntheticLambdaMixinCompatibilityTest {
     void replacedBindingsUseStableNamedInjectionPoints()
             throws IOException {
         String unload = read(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "ClientMessageUnloadAttachmentMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/ClientMessageUnloadAttachmentMixin.java"
         );
         String animation = read(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "GunAnimationStateContextMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunAnimationStateContextMixin.java"
         );
         String kinetic = read(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "tacz/v1_1_8/"
-                        + "ModernKineticGunScriptAPIMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/ModernKineticGunScriptAPIMixin.java"
         );
         String helper = read(
-                "src/main/java/com/mafuyu404/taczaddon/common/"
-                        + "BackpackAmmoService.java"
+                "src/main/java/com/mafuyu404/taczaddon/ammo/BackpackAmmoService.java"
         );
 
         assertTrue(unload.contains(

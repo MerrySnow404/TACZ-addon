@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+
 import com.tacz.guns.api.client.animation.statemachine.LuaAnimationStateMachine;
 import com.tacz.guns.client.animation.statemachine.ItemAnimationStateContext;
 import com.tacz.guns.client.renderer.item.AnimateGeoItemRenderer;

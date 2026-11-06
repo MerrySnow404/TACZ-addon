@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.common.BackpackAmmoService;
+import com.mafuyu404.taczaddon.ammo.BackpackAmmoService;
+
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;

@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
+import com.mafuyu404.taczaddon.bootstrap.TaczAddonMixinPlugin;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -61,8 +63,7 @@ class TaczArchitectureTest {
         assertTrue(config.contains("\"package\": \"com.mafuyu404.taczaddon.mixin\""));
         assertTrue(config.contains("\"refmap\": \"taczaddon.refmap.json\""));
         assertTrue(config.contains(
-                "\"plugin\": \"com.mafuyu404.taczaddon.compat.tacz."
-                        + "TaczAddonMixinPlugin\""
+                "\"plugin\": \"com.mafuyu404.taczaddon.bootstrap.TaczAddonMixinPlugin\""
         ));
         assertTrue(config.contains("SmithingMenuMixin"));
         assertTrue(config.contains("AbstractContainerScreenMixin"));
@@ -81,8 +82,8 @@ class TaczArchitectureTest {
             throws IOException {
         // Concatenated literals keep the legacy bridge name out of the
         // source tree so the final bridge-name grep stays at zero hits.
-        String legacyStorageKey = "GunSmithTable" + "JEI";
-        String legacyEventClass = "JEI" + "Event";
+        String legacyStorageKey = "GunSmithTableJEI";
+        String legacyEventClass = "JEIEvent";
         Path mainRoot = PROJECT_ROOT.resolve(
                 "src/main/java/com/mafuyu404/taczaddon"
         );
@@ -102,10 +103,9 @@ class TaczArchitectureTest {
         }
         assertFalse(
                 Files.exists(PROJECT_ROOT.resolve(
-                        "src/main/java/com/mafuyu404/taczaddon/"
-                                + "event/" + "JEI" + "Event.java"
+                        "src/main/java/com/mafuyu404/taczaddon/event/JEIEvent.java"
                 )),
-                "legacy " + "JEI" + "Event.java must stay deleted"
+                "legacy JEIEvent.java must stay deleted"
         );
     }
 
@@ -113,9 +113,7 @@ class TaczArchitectureTest {
     void gunSmithIngredientMixinKeepsFrameLocalArchitecture()
             throws IOException {
         String mixin = read(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/"
-                        + "v1_1_8/"
-                        + "GunSmithTableIngredientInteractionMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/tacz/v1_1_8/GunSmithTableIngredientInteractionMixin.java"
         );
 
         assertTrue(mixin.contains("renderIngredient("));
@@ -127,7 +125,7 @@ class TaczArchitectureTest {
         assertTrue(mixin.contains("remap = true"));
 
         assertFalse(mixin.contains("DataStorage"));
-        assertFalse(mixin.contains("GunSmithTable" + "JEI"));
+        assertFalse(mixin.contains("GunSmithTableJEI"));
         assertFalse(mixin.contains("InputEvent.MouseButton"));
         assertFalse(mixin.contains("int[] mouse"));
         assertFalse(mixin.contains("HashMap<String, Boolean>"));
@@ -136,8 +134,7 @@ class TaczArchitectureTest {
         assertFalse(mixin.contains("@At(\"STORE\")"));
 
         String containerScreen = read(
-                "src/main/java/com/mafuyu404/taczaddon/mixin/"
-                        + "AbstractContainerScreenMixin.java"
+                "src/main/java/com/mafuyu404/taczaddon/mixin/AbstractContainerScreenMixin.java"
         );
         assertTrue(containerScreen.contains("mouseReleased"));
         assertTrue(containerScreen.contains(
@@ -149,8 +146,12 @@ class TaczArchitectureTest {
     void commonAndNetworkPackagesDoNotImportClientClasses()
             throws IOException {
         List<Path> roots = List.of(
+                PROJECT_ROOT.resolve("src/main/java/com/mafuyu404/taczaddon/gunsmith"),
+                PROJECT_ROOT.resolve("src/main/java/com/mafuyu404/taczaddon/ammo"),
+                PROJECT_ROOT.resolve("src/main/java/com/mafuyu404/taczaddon/gun"),
+                PROJECT_ROOT.resolve("src/main/java/com/mafuyu404/taczaddon/storage"),
                 PROJECT_ROOT.resolve(
-                        "src/main/java/com/mafuyu404/taczaddon/common"
+                        "src/main/java/com/mafuyu404/taczaddon/refit"
                 ),
                 PROJECT_ROOT.resolve(
                         "src/main/java/com/mafuyu404/taczaddon/network"
@@ -210,8 +211,7 @@ class TaczArchitectureTest {
 
         assertTrue(
                 common.contains("tacz.v1_1_8.LivingEntityDrawGunMixin"),
-                "server-visible fast-swap adapter must stay in the common "
-                        + "array"
+                "server-visible fast-swap adapter must stay in the common array"
         );
         assertFalse(
                 client.contains("tacz.v1_1_8.LivingEntityDrawGunMixin"),
@@ -274,7 +274,7 @@ class TaczArchitectureTest {
             String path = source.toString().replace('\\', '/');
             if (path.contains("/mixin/")
                     || path.endsWith(
-                    "/compat/tacz/TaczAddonMixinPlugin.java"
+                    "/bootstrap/TaczAddonMixinPlugin.java"
             )) {
                 continue;
             }

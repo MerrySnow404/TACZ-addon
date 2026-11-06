@@ -1,7 +1,8 @@
 package com.mafuyu404.taczaddon.mixin;
 
-import com.mafuyu404.taczaddon.init.NetworkHandler;
 import com.mafuyu404.taczaddon.network.AmmoBoxCollectPacket;
+import com.mafuyu404.taczaddon.network.NetworkHandler;
+
 import com.tacz.guns.item.AmmoBoxItem;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;

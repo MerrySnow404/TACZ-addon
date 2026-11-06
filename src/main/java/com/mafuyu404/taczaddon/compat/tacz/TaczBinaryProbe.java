@@ -1,6 +1,12 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
-import com.mafuyu404.taczaddon.compat.tacz.contract.*;
+import com.mafuyu404.taczaddon.compat.tacz.contract.ClassContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.FieldAccessContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.FieldContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.InvokeContract;
+import com.mafuyu404.taczaddon.compat.tacz.contract.MethodContract;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.*;
 

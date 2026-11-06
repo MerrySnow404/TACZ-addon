@@ -1,6 +1,9 @@
 package com.mafuyu404.taczaddon.client;
 
-import com.mafuyu404.taczaddon.common.BetterGunSmithTable;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCompatibilityService;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithPropertyFilterAccess;
+
+import com.mafuyu404.taczaddon.client.gunsmith.BetterGunSmithTable;
 import com.mafuyu404.taczaddon.compat.tacz.api.TaczGunSmithScreenAccess;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;

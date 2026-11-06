@@ -1,5 +1,9 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
+import com.mafuyu404.taczaddon.bootstrap.TaczAddonMixinPlugin;
+
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
+
 import com.mafuyu404.taczaddon.compat.tacz.contract.ClassContract;
 import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
 import org.junit.jupiter.api.Test;
@@ -19,6 +23,10 @@ class TaczCompatibilityGateTest {
 
     @Test
     void versionProfileIsExact() {
+        assertEquals(TaczCompatibilityProfile.TACZ_1_2_0,
+                TaczVersionReader.profileForVersion("1.2.0"));
+        assertEquals(TaczCompatibilityProfile.UNKNOWN,
+                TaczVersionReader.profileForVersion("1.2.1"));
         assertEquals(
                 TaczCompatibilityProfile.TACZ_1_1_8_HOTFIX,
                 TaczVersionReader.profileForVersion("1.1.8-hotfix2")
@@ -51,10 +59,8 @@ class TaczCompatibilityGateTest {
 
     @Test
     void featureMismatchDoesNotMutateProfileOrOtherFeatures() {
-        assertEquals(
-                TaczCompatibilityProfile.TACZ_1_1_8_HOTFIX,
-                TaczCompatibility.profile()
-        );
+        var originalProfile = TaczCompatibility.profile();
+        assertNotEquals(TaczCompatibilityProfile.UNKNOWN, originalProfile);
 
         TaczMixinBinding broken = new TaczMixinBinding(
                 "com.example.BrokenMixin",
@@ -69,7 +75,7 @@ class TaczCompatibilityGateTest {
 
         assertFalse(TaczCompatibility.isMixinBindingAvailable(broken));
         assertEquals(
-                TaczCompatibilityProfile.TACZ_1_1_8_HOTFIX,
+                originalProfile,
                 TaczCompatibility.profile()
         );
         assertEquals(
@@ -121,14 +127,12 @@ class TaczCompatibilityGateTest {
     void slideContractUsesPublicThreeArgumentOverload() {
         TaczMixinBinding binding =
                 TaczContractRegistry.bindingForMixin(
-                        "com.mafuyu404.taczaddon.mixin.tacz.v1_1_8."
-                                + "LivingEntityShootMixin"
+                        "com.mafuyu404.taczaddon.mixin.tacz.v1_1_8.LivingEntityShootMixin"
                 );
         assertNotNull(binding);
         String contractText = binding.contract().toString();
         assertTrue(contractText.contains(
-                "Ljava/util/function/Supplier;"
-                        + "Ljava/util/function/Supplier;J)"
+                "Ljava/util/function/Supplier;Ljava/util/function/Supplier;J)"
         ));
         assertFalse(contractText.contains("JFZ)"));
     }

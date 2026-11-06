@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
+
 import com.mafuyu404.taczaddon.compat.tacz.contract.ClassContract;
 import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
 import com.mafuyu404.taczaddon.compat.tacz.contract.FieldContract;
@@ -23,8 +25,7 @@ class TaczMixinDependencyTest {
     private static final Path PROJECT_ROOT =
             Path.of("").toAbsolutePath().normalize();
 
-    private static final String REFIT = "com.mafuyu404.taczaddon.mixin."
-            + "tacz.v1_1_8.";
+    private static final String REFIT = "com.mafuyu404.taczaddon.mixin.tacz.v1_1_8.";
 
     private static final List<String> REFIT_GROUP = List.of(
             "ClientMessageRefitGunAccess",
@@ -56,8 +57,7 @@ class TaczMixinDependencyTest {
             assertSame(
                     refit,
                     binding.contract(),
-                    mixin + " must consume the complete refit contract so the"
-                            + " accessor and its users stay paired"
+                    mixin + " must consume the complete refit contract so the accessor and its users stay paired"
             );
             assertEquals(
                     TaczFeature.LIBERATED_REFIT,
@@ -77,14 +77,10 @@ class TaczMixinDependencyTest {
                 TaczFeature.LIBERATED_REFIT,
                 TaczContractRegistry.PROFILE_ID,
                 new ClassContract(
-                        "com.tacz.guns.client.gui.components.refit."
-                                + "InventoryAttachmentSlot"
+                        "com.tacz.guns.client.gui.components.refit.InventoryAttachmentSlot"
                 ).withMethods(new MethodContract(
                         "<init>",
-                        "(IIILnet/minecraft/world/entity/player/"
-                                + "Inventory;"
-                                + "Lnet/minecraft/client/gui/components/"
-                                + "Button$OnPress;)V"
+                        "(IIILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/client/gui/components/Button$OnPress;)V"
                 )).withFields(FieldContract.of(
                         "renamedInventory",
                         "Lnet/minecraft/world/entity/player/Inventory;"
@@ -205,8 +201,7 @@ class TaczMixinDependencyTest {
             assertEquals(
                     TaczCompatibility.binaryStatus(feature),
                     TaczCompatibility.status(feature),
-                    feature + " has a dependency or contract problem on the "
-                            + "exact TaCZ jar"
+                    feature + " has a dependency or contract problem on the exact TaCZ jar"
             );
         }
     }

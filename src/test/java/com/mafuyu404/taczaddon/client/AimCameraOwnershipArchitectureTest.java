@@ -20,12 +20,10 @@ class AimCameraOwnershipArchitectureTest {
     void compositeOwnershipRemovesMutuallyExclusiveBackendModel()
             throws IOException {
         String context = read(
-                "src/main/java/com/mafuyu404/taczaddon/client/"
-                        + "AimCameraContext.java"
+                "src/main/java/com/mafuyu404/taczaddon/client/camera/AimCameraContext.java"
         );
         String controller = read(
-                "src/main/java/com/mafuyu404/taczaddon/client/"
-                        + "AimCameraController.java"
+                "src/main/java/com/mafuyu404/taczaddon/client/camera/AimCameraController.java"
         );
 
         assertTrue(context.contains("boolean shoulderSurfingActive"));
@@ -55,12 +53,10 @@ class AimCameraOwnershipArchitectureTest {
                 "PERSPECTIVE_" + "VANILLA_FALLBACK"
         ));
         assertFalse(allJava.contains(
-                "io.github.leawind.thirdperson."
-                        + "internal"
+                "io.github.leawind.thirdperson." + "internal"
         ));
         assertFalse(allJava.contains(
-                "com.github.exopandora.shouldersurfing."
-                        + "client."
+                "com.github.exopandora.shouldersurfing." + "client."
         ));
     }
 

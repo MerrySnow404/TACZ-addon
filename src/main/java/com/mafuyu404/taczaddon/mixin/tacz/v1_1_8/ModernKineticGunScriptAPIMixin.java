@@ -1,13 +1,14 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.common.AmmoConsumptionOrchestrator;
-import com.mafuyu404.taczaddon.common.AmmoConsumptionOrchestrator.ConsumptionOutcome;
-import com.mafuyu404.taczaddon.common.BackpackAmmoService;
-import com.mafuyu404.taczaddon.common.CuriosAmmoService;
-import com.mafuyu404.taczaddon.compat.BeyondIntegrationCompat;
-import com.mafuyu404.taczaddon.compat.CuriosCompat;
-import com.mafuyu404.taczaddon.compat.CreateStorageCompat;
-import com.mafuyu404.taczaddon.compat.SophisticatedBackpacksCompat;
+import com.mafuyu404.taczaddon.ammo.AmmoConsumptionOrchestrator;
+import com.mafuyu404.taczaddon.ammo.BackpackAmmoService;
+import com.mafuyu404.taczaddon.ammo.CuriosAmmoService;
+import com.mafuyu404.taczaddon.ammo.api.ConsumptionOutcome;
+import com.mafuyu404.taczaddon.compat.beyond.BeyondIntegrationCompat;
+import com.mafuyu404.taczaddon.compat.createstorage.CreateStorageCompat;
+import com.mafuyu404.taczaddon.compat.curios.CuriosCompat;
+import com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedBackpacksCompat;
+
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;

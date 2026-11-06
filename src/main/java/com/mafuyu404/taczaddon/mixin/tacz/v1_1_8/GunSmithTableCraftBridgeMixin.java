@@ -1,11 +1,12 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithCraftBridgeState;
-import com.mafuyu404.taczaddon.client.GunSmithCraftRouting;
-import com.mafuyu404.taczaddon.init.ClientSyncedConfig;
-import com.mafuyu404.taczaddon.init.crafting.CraftingTransaction;
-import com.mafuyu404.taczaddon.init.crafting.GunSmithCraftScreenAccess;
-import com.mafuyu404.taczaddon.init.crafting.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCraftBridgeState;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCraftRouting;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCraftScreenAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithSourceScreenAccess;
+import com.mafuyu404.taczaddon.gunsmith.CraftingTransaction;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;

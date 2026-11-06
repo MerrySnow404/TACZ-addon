@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
+
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

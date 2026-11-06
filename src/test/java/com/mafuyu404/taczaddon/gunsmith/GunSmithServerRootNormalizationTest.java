@@ -26,8 +26,7 @@ class GunSmithServerRootNormalizationTest {
     void rootNormalizationPrecedesBlockEntityLookup()
             throws IOException {
         String serverEvent = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/event/"
-                        + "ServerEvent.java"
+                "src/main/java/com/mafuyu404/taczaddon/event/ServerEvent.java"
         );
 
         int blockState = serverEvent.indexOf(
@@ -72,8 +71,7 @@ class GunSmithServerRootNormalizationTest {
     void sessionManagerStaysFailClosedForNullRoot()
             throws IOException {
         String manager = readProjectFile(
-                "src/main/java/com/mafuyu404/taczaddon/init/"
-                        + "GunSmithCraftingSessionManager.java"
+                "src/main/java/com/mafuyu404/taczaddon/gunsmith/GunSmithCraftingSessionManager.java"
         );
 
         assertTrue(manager.contains(

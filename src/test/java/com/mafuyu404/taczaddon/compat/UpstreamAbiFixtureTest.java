@@ -1,5 +1,11 @@
 package com.mafuyu404.taczaddon.compat;
 
+import com.mafuyu404.taczaddon.compat.api.ApiShapeProbe;
+import com.mafuyu404.taczaddon.compat.camera.LeawindGeneration;
+import com.mafuyu404.taczaddon.compat.camera.PerspectiveIntegrationProfile;
+import com.mafuyu404.taczaddon.compat.camera.ShoulderSurfingDispatch;
+import com.mafuyu404.taczaddon.compat.camera.ShoulderSurfingGeneration;
+
 import com.mafuyu404.taczaddon.testutil.CompatibilityFixtures;
 import org.junit.jupiter.api.Test;
 
@@ -90,8 +96,7 @@ class UpstreamAbiFixtureTest {
                 source,
                 "com.github.exopandora.shouldersurfing.api.model.Perspective",
                 "current",
-                "()Lcom/github/exopandora/shouldersurfing/api/model/"
-                        + "Perspective;"
+                "()Lcom/github/exopandora/shouldersurfing/api/model/Perspective;"
         ));
         assertTrue(ApiShapeProbe.hasField(
                 source,
@@ -195,8 +200,7 @@ class UpstreamAbiFixtureTest {
         assertFalse(
                 hasEntry(
                         jar,
-                        "io/github/leawind/perspectiveapi/api/"
-                                + "PerspectiveAPI.class"
+                        "io/github/leawind/perspectiveapi/api/PerspectiveAPI.class"
                 ),
                 "Leawind 2.x must not ship the Perspective API"
         );
@@ -207,8 +211,7 @@ class UpstreamAbiFixtureTest {
                         false,
                         jarSource(jar)
                 ),
-                "Leawind 2.x must be coexist-only, never Perspective API "
-                        + "compatible"
+                "Leawind 2.x must be coexist-only, never Perspective API compatible"
         );
         /*
          * Leawind 2.x plus an independently installed Perspective API must not
@@ -264,8 +267,7 @@ class UpstreamAbiFixtureTest {
                         true,
                         combined(jar, perspectiveApi())
                 ),
-                "Leawind 3.x + verified Perspective API is the supported "
-                        + "generation"
+                "Leawind 3.x + verified Perspective API is the supported generation"
         );
     }
 

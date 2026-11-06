@@ -52,7 +52,7 @@ public class OptionalCompatEntrypointTest {
     void everyApiEntryTripsAndAllSiblingEntriesStopRetrying(String simpleName, String methodName) throws Exception {
         CALLS.set(0);
         ClassLoader loader = fixtureLoader();
-        Class<?> facade = Class.forName(PACKAGE + simpleName, true, loader);
+        Class<?> facade = Class.forName(com.mafuyu404.taczaddon.testutil.CompatibilityClassNames.compatClassName(simpleName), true, loader);
         if (simpleName.equals("JeiCompat")) facade.getMethod("init").invoke(null);
         Method entry = Stream.of(facade.getDeclaredMethods()).filter(m -> m.getName().equals(methodName)).findFirst().orElseThrow();
         if (propagatesLinkageToCaller(simpleName, methodName)) {
@@ -74,7 +74,7 @@ public class OptionalCompatEntrypointTest {
         for (String other : List.of("CuriosCompat", "JeiCompat", "ShoulderSurfing5Compat", "PerspectiveApiCompat",
                 "SophisticatedBackpacksCompat", "SophisticatedStorageClientCompat", "BeyondIntegrationCompat")) {
             if (other.equals(simpleName)) continue;
-            var otherLatch = Class.forName(PACKAGE + other, true, loader).getDeclaredField("linkageBroken");
+            var otherLatch = Class.forName(com.mafuyu404.taczaddon.testutil.CompatibilityClassNames.compatClassName(other), true, loader).getDeclaredField("linkageBroken");
             otherLatch.setAccessible(true);
             assertFalse(otherLatch.getBoolean(null), other + " must remain independent");
         }
@@ -198,7 +198,7 @@ public class OptionalCompatEntrypointTest {
             if (input == null) throw new IOException(name);
             ClassNode node = new ClassNode();
             new ClassReader(input).accept(node, 0);
-            if (name.endsWith("Inner") || name.equals(PACKAGE + "JeiPlugin")) {
+            if (name.endsWith("Inner") || name.equals("com.mafuyu404.taczaddon.compat.jei.JeiPlugin")) {
                 node.interfaces.clear();
                 node.fields.clear();
                 node.methods.removeIf(m -> (m.access & Opcodes.ACC_STATIC) == 0 || m.name.equals("<clinit>"));

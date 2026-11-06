@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.compat.tacz;
 
+import com.mafuyu404.taczaddon.compat.tacz.contract.TaczFeature;
+
 import com.mafuyu404.taczaddon.compat.tacz.contract.FeatureContract;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassWriter;
@@ -42,7 +44,7 @@ class TaczBinaryProbeTest {
             throws Exception {
         for (TaczFeature feature : FRAGILE_FEATURES) {
             FeatureContract contract =
-                    TaczContractRegistry.contractFor(feature);
+                    TaczContractRegistry.contractFor(feature, TaczCompatibility.profile());
             assertTrue(
                     contract != null
                             && !contract.classes().isEmpty(),

@@ -1,5 +1,9 @@
 package com.mafuyu404.taczaddon.compat;
 
+import com.mafuyu404.taczaddon.compat.api.ApiShapeProbe;
+import com.mafuyu404.taczaddon.compat.camera.PerspectiveIntegrationProfile;
+import com.mafuyu404.taczaddon.compat.sophisticated.SophisticatedBackpackGeneration;
+
 import com.mafuyu404.taczaddon.testutil.SyntheticOptionalApis;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassWriter;
@@ -386,8 +390,7 @@ class OptionalCompatibilityProfileTest {
                                         .getClassLoader()
                         )
                 ),
-                "dev baseline Perspective API must satisfy the verified "
-                        + "contract and Leawind 3.x is the dev baseline"
+                "dev baseline Perspective API must satisfy the verified contract and Leawind 3.x is the dev baseline"
         );
     }
 
@@ -407,8 +410,7 @@ class OptionalCompatibilityProfileTest {
         assertEquals(
                 SophisticatedBackpackGeneration.LINKED_STORAGE,
                 SophisticatedBackpackGeneration.detect(source),
-                "dev baseline Sophisticated Core must be the verified 3.26 "
-                        + "linked-storage generation"
+                "dev baseline Sophisticated Core must be the verified 3.26 linked-storage generation"
         );
     }
 
@@ -460,7 +462,7 @@ class OptionalCompatibilityProfileTest {
         Class<?> facade(String simpleName)
                 throws ClassNotFoundException {
             return Class.forName(
-                    PACKAGE + simpleName,
+                    com.mafuyu404.taczaddon.testutil.CompatibilityClassNames.compatClassName(simpleName),
                     true,
                     this
             );
@@ -696,9 +698,7 @@ class OptionalCompatibilityProfileTest {
                 emit(
                         writer,
                         "requestFirstPerson",
-                        "()Lcom/mafuyu404/taczaddon/compat/"
-                                + "PerspectiveApiCompat"
-                                + "$PerspectiveApiHandle;",
+                        "()Lcom/mafuyu404/taczaddon/compat/camera/PerspectiveApiHandle;",
                         null,
                         false
                 );

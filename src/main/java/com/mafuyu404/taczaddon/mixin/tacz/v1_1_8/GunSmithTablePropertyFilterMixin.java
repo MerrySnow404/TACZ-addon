@@ -1,10 +1,11 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithCompatibilityService;
-import com.mafuyu404.taczaddon.client.GunSmithPropertyFilter;
-import com.mafuyu404.taczaddon.client.GunSmithPropertyFilterAccess;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithCompatibilityService;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithPropertyFilter;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithPropertyFilterAccess;
+import com.mafuyu404.taczaddon.client.ui.DropDown;
 import com.mafuyu404.taczaddon.compat.tacz.api.TaczGunSmithScreenAccess;
-import com.mafuyu404.taczaddon.init.DropDown;
+
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.crafting.GunSmithTableRecipe;

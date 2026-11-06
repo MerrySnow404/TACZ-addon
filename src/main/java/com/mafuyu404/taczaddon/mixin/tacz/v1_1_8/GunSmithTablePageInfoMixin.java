@@ -1,6 +1,7 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.GunSmithPageInfo;
+import com.mafuyu404.taczaddon.client.gunsmith.GunSmithPageInfo;
+
 import com.tacz.guns.client.gui.GunSmithTableScreen;
 import com.tacz.guns.inventory.GunSmithTableMenu;
 import net.minecraft.client.gui.GuiGraphics;
