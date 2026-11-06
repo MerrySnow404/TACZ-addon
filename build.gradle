@@ -55,6 +55,13 @@ if (!(ecosystemMods in ['none', 'create', 'beyond', 'both'])) {
 def optionalMods = providers.gradleProperty('optionalMods').getOrElse('all')
 if (!(optionalMods in ['all', 'none'])) throw new GradleException('optionalMods must be all or none')
 def smoke = providers.gradleProperty('smoke').getOrElse('false').toBoolean()
+def compatSmoke = providers.gradleProperty('compatSmoke').getOrElse('false').toBoolean()
+if (compatSmoke) {
+    sourceSets.create('compatSmoke') {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
 configurations.matching { it.name in ['runtimeClasspath', 'testRuntimeClasspath'] }.configureEach {
     if (optionalMods == 'none' || !(ecosystemMods in ['create', 'both'])) {
         exclude group: 'curse.maven', module: 'create-storage-neo-forge-1281770'
@@ -88,6 +95,10 @@ neoForge {
             client()
             gameDirectory = file("run/camera-compat/${cameraMods}")
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            if (compatSmoke) {
+                gameDirectory = file('run/tacz-compat-smoke')
+                systemProperty 'taczaddon.test.official', providers.gradleProperty('taczRuntimeJar').isPresent().toString()
+            }
         }
 
         server {
@@ -129,6 +140,7 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
+            if (compatSmoke) sourceSet(sourceSets.compatSmoke)
         }
     }
 }
@@ -143,7 +155,13 @@ dependencies {
     implementation "curse.maven:create-storage-neo-forge-1281770:9088348"
     implementation "curse.maven:beyond-integration-1557405:9106101"
     implementation "maven.modrinth:6zGxpbt7:FP6mjH0z" // Beyond Dimensions 0.7.30
+    // Compile against the original port; the same output can be tested with an official jar.
     implementation "curse.maven:tacz-1-21-1-1353462:9027337"
+    if (providers.gradleProperty('taczRuntimeJar').isPresent()) {
+        runtimeOnly files(providers.gradleProperty('taczRuntimeJar').get())
+        configurations.runtimeClasspath.exclude group: 'curse.maven', module: 'tacz-1-21-1-1353462'
+        configurations.testRuntimeClasspath.exclude group: 'curse.maven', module: 'tacz-1-21-1-1353462'
+    }
 
     compileOnly "maven.modrinth:shoulder-surfing-reloaded:5380Ijsk"
 
@@ -172,6 +190,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    systemProperty 'taczaddon.test.official', providers.gradleProperty('taczRuntimeJar').isPresent()
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
