@@ -113,7 +113,7 @@ class TaczCompatibilityGateTest {
                 assertTrue(plugin.shouldApplyMixin("com.example.Target", mixinClass), mixinClass);
             }
         }
-        assertEquals(5, stableCount);
+        assertEquals(4, stableCount);
         assertTrue(taczCount > 0);
     }
 

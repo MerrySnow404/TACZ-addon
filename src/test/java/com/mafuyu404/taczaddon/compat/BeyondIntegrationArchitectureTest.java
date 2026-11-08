@@ -32,9 +32,21 @@ class BeyondIntegrationArchitectureTest {
         assertTrue(beyond.contains(
                 "findAndExtractInventoryAmmo"
         ));
-        assertFalse(beyond.contains(
-                "com.solr98.beyondintegration"
+        // Direct BI API path (preferred): probed by class-name string only — no compile-time
+        // dependency on Beyond Integration, invocation goes through the reflective isolation layer.
+        assertTrue(beyond.contains(
+                "tryConsumeFromAll"
         ));
+        assertFalse(beyond.contains(
+                "import com.solr98"
+        ));
+        String api = read(
+                "src/main/java/com/mafuyu404/taczaddon/compat/"
+                        + "BeyondAmmoApi.java"
+        );
+        assertTrue(api.contains("getMethod"));
+        assertTrue(api.contains("tryConsumeFromAll"));
+        assertFalse(api.contains("import com.solr98"));
         assertFalse(beyond.contains("getCapability"));
         assertFalse(beyond.contains("CombinedInvWrapper"));
         assertFalse(beyond.contains("PlayerInvWrapper"));

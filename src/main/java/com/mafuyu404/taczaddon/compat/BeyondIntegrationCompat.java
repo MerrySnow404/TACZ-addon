@@ -20,24 +20,24 @@ import java.util.function.IntSupplier;
 /**
  * Deliberately narrow compatibility bridge for Beyond Integration.
  *
- * Beyond Integration augments TaCZ
- * AbstractGunItem#findAndExtractInventoryAmmo at RETURN and identifies
- * player-backed extraction through PlayerMainInvWrapper.
+ * <p>Two consumption paths are supported, preferred in this order:
+ * <ol>
+ *   <li><b>Direct BI API</b> ({@code TaczAmmoExtractor#tryConsumeFromAll}) — returns the exact
+ *       consumed amount, no need to infer state from an opaque TaCZ hook.</li>
+ *   <li><b>TaCZ hook fallback</b> — BI augments {@code AbstractGunItem#findAndExtractInventoryAmmo}
+ *       at RETURN and identifies player-backed extraction through {@code PlayerMainInvWrapper};
+ *       one player-main pass lets that hook consume remaining network ammo before our backpack
+ *       fallback.</li>
+ * </ol>
  *
- * TACZ-addon normally keeps Sophisticated Backpack mutation outside that
- * extensible TaCZ extraction path. When Beyond Integration is present we
- * expose exactly one player-main extraction pass here so its existing TaCZ
- * compatibility hook can consume the remaining network ammo before our
- * backpack fallback.
- *
- * <p>Installed and usable stay separate: this bridge needs both the Beyond
- * Integration mod and TaCZ's verified
- * {@code AbstractGunItem#findAndExtractInventoryAmmo} hook. The TaCZ side is a
- * capability check, not a mod-presence check.
+ * <p>Installed and usable stay separate: this bridge needs both the Beyond Integration mod and
+ * at least one of the two capabilities above. Capabilities are probed by class shape, not by
+ * mod version.
  */
 public final class BeyondIntegrationCompat {
     private static final String MOD_ID = "beyond_integration";
     private static volatile boolean linkageBroken;
+    private static volatile Boolean biApiPresent;
     private static volatile Boolean taczHookPresent;
     private static final AtomicBoolean LINKAGE_WARNING_LOGGED = new AtomicBoolean();
 
@@ -50,12 +50,40 @@ public final class BeyondIntegrationCompat {
     }
 
     /**
-     * TaCZ binary capability this bridge depends on.
+     * Any supported consumption capability present (direct BI API preferred, TaCZ hook fallback).
      *
-     * <p>The hook is not part of the other TaCZ feature contracts, so it is
-     * probed explicitly here instead of being inferred from the TaCZ version.
+     * <p>The hook is not part of the other TaCZ feature contracts, so it is probed explicitly here
+     * instead of being inferred from the TaCZ version.
      */
     public static boolean isSupported() {
+        return isBiApiPresent() || isTaczHookPresent();
+    }
+
+    /** BI's stable API shape: {@code TaczAmmoExtractor#tryConsumeFromAll(ServerPlayer, ItemStack, int)}. */
+    private static boolean isBiApiPresent() {
+        Boolean cached = biApiPresent;
+        if (cached != null) {
+            return cached;
+        }
+        boolean present = TaczBinaryProbe.inspect(
+                new FeatureContract(
+                        TaczFeature.BACKPACK_AMMO_QUERY,
+                        "beyond-integration-api",
+                        new ClassContract(
+                                "com.solr98.beyondintegration.feature.ammo.tacz.TaczAmmoExtractor"
+                        ).withMethods(new MethodContract(
+                                "tryConsumeFromAll",
+                                "(Lnet/minecraft/server/level/ServerPlayer;"
+                                        + "Lnet/minecraft/world/item/ItemStack;I)I"
+                        ))
+                )
+        ).passed();
+        biApiPresent = present;
+        return present;
+    }
+
+    /** Legacy TaCZ hook shape (used only when the direct BI API is absent). */
+    private static boolean isTaczHookPresent() {
         Boolean cached = taczHookPresent;
         if (cached != null) {
             return cached;
@@ -83,15 +111,13 @@ public final class BeyondIntegrationCompat {
     }
 
     /**
-     * One TaCZ main-inventory extraction pass so Beyond Integration's own
-     * compatibility hook can consume the remaining network ammo before the
-     * backpack fallback.
+     * One consumption pass for Beyond Integration: prefers the direct BI API, falls back to the
+     * TaCZ main-inventory hook.
      *
-     * <p>A disabled or already tripped bridge reports a normal zero so the
-     * other independent sources still work. A linkage failure throws
-     * {@link IncompleteConsumptionException}: the opaque hook may already have
-     * changed state, so the orchestrator records the previously confirmed
-     * rounds and stops the request.
+     * <p>A disabled or already tripped bridge reports a normal zero so the other independent
+     * sources still work. A linkage failure throws {@link IncompleteConsumptionException}: the
+     * external path may already have changed state, so the orchestrator records the previously
+     * confirmed rounds and stops the request.
      */
     public static ConsumptionOutcome consumeThroughTaczInventoryContract(
             ServerPlayer player,
@@ -106,6 +132,13 @@ public final class BeyondIntegrationCompat {
                 || gunStack.isEmpty()
                 || requested <= 0) {
             return ConsumptionOutcome.confirmed(0);
+        }
+
+        if (isBiApiPresent()) {
+            return ConsumptionOutcome.confirmed(
+                    runGuarded(requested, () ->
+                            BeyondAmmoApi.tryConsumeFromAll(player, gunStack, requested))
+            );
         }
 
         return ConsumptionOutcome.confirmed(
@@ -137,7 +170,7 @@ public final class BeyondIntegrationCompat {
                         "[TACZ-addon] Beyond Integration ammo bridge unavailable; disabled for this session. "
                                 + "Current supplemental consumption stopped because partial extraction is unknown", error);
             }
-            // The external hook may already have changed inventory/network state.
+            // The external path may already have changed inventory/network state.
             // Do not claim zero consumption and trigger another source for the same deficit.
             throw new IncompleteConsumptionException(error);
         }

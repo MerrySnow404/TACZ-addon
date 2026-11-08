@@ -23,7 +23,6 @@
     "tacz.v1_1_8.ModernKineticGunScriptAPIMixin"
   ],
   "client": [
-    "beyond.TaczAmmoCacheMixin",
     "AbstractContainerScreenMixin",
     "InventoryScreenMixin",
     "tacz.AimKeyMixin",
