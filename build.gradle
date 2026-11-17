@@ -157,11 +157,10 @@ dependencies {
     implementation "curse.maven:create-storage-neo-forge-1281770:9088348"
     implementation "curse.maven:beyond-integration-1557405:9106101"
     implementation "maven.modrinth:6zGxpbt7:FP6mjH0z" // Beyond Dimensions 0.7.30
-    // Compile against the original port; the same output can be tested with an official jar.
-    implementation "curse.maven:tacz-1-21-1-1353462:9027337"
+    implementation "curse.maven:timeless-and-classics-zero-1028108:9623169"
     if (providers.gradleProperty('taczRuntimeJar').isPresent()) {
         runtimeOnly files(providers.gradleProperty('taczRuntimeJar').get())
-        configurations.runtimeClasspath.exclude group: 'curse.maven', module: 'tacz-1-21-1-1353462'
+        configurations.runtimeClasspath.exclude group: 'curse.maven', module: 'timeless-and-classics-zero-1028108'
     }
 
     compileOnly "maven.modrinth:shoulder-surfing-reloaded:5380Ijsk"
