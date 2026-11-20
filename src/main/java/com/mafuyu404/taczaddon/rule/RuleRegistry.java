@@ -1,5 +1,7 @@
 package com.mafuyu404.taczaddon.rule;
 
+import com.mafuyu404.taczaddon.network.ServerPolicySync;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.GameRules;
 
@@ -21,29 +23,6 @@ public final class RuleRegistry {
             )
     );
 
-    public static final GameRules.Key<GameRules.BooleanValue> SHOW_ATTACHMENT_DETAIL =
-            GameRules.register(
-                    "showAttachmentDetail",
-                    GameRules.Category.PLAYER,
-                    GameRules.BooleanValue.create(
-                            true,
-                            RuleRegistry::onShowAttachmentDetailChanged
-                    )
-            );
-
-    private static void onShowAttachmentDetailChanged(MinecraftServer server, GameRules.BooleanValue value) {
-        detailChanged.accept(server, value.get());
-    }
-
-    private static java.util.function.BiConsumer<MinecraftServer, Boolean> detailChanged = (server, enabled) -> {};
-    private static java.util.function.BiConsumer<MinecraftServer, Boolean> liberateChanged = (server, enabled) -> {};
-
-    public static void bindSync(java.util.function.BiConsumer<MinecraftServer, Boolean> detail,
-                                java.util.function.BiConsumer<MinecraftServer, Boolean> liberate) {
-        detailChanged = java.util.Objects.requireNonNull(detail);
-        liberateChanged = java.util.Objects.requireNonNull(liberate);
-    }
-
     private RuleRegistry() {
     }
 
@@ -52,6 +31,6 @@ public final class RuleRegistry {
     }
 
     private static void onLiberateAttachmentChanged(MinecraftServer server, GameRules.BooleanValue value) {
-        liberateChanged.accept(server, value.get());
+        ServerPolicySync.broadcastLiberateAttachment(server, value.get());
     }
 }

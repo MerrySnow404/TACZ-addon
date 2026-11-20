@@ -1,7 +1,6 @@
 package com.mafuyu404.taczaddon.bootstrap;
 
 import com.mafuyu404.taczaddon.network.AmmoBoxCollectPacket;
-import com.mafuyu404.taczaddon.network.AttachmentDetailRuleStatePacket;
 import com.mafuyu404.taczaddon.network.ClientPacketDispatch;
 import com.mafuyu404.taczaddon.network.GunSmithCraftRequestPacket;
 import com.mafuyu404.taczaddon.network.GunSmithCraftResultPacket;
@@ -43,7 +42,6 @@ public final class NetworkRegistration {
     private static final int ID_REFIT_SOURCE_REFRESH = 10;
     private static final int ID_REFIT_SOURCE_SNAPSHOT = 11;
     private static final int ID_REFIT_EXTERNAL_INSTALL = 12;
-    private static final int ID_ATTACHMENT_DETAIL_RULE_STATE = 13;
     public static void register() {
         CHANNEL.registerMessage(
                 ID_SWITCH_GUN,
@@ -152,10 +150,5 @@ public final class NetworkRegistration {
                 RefitExternalAttachmentInstallHandler::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER)
         );
-
-        CHANNEL.registerMessage(
-                ID_ATTACHMENT_DETAIL_RULE_STATE, AttachmentDetailRuleStatePacket.class,
-                AttachmentDetailRuleStatePacket::encode, AttachmentDetailRuleStatePacket::decode,
-                ClientPacketDispatch::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

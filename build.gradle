@@ -43,6 +43,10 @@ sourceSets {
 }
 configurations {
     compileOnly.extendsFrom clientRuntimeOnly
+    // Compixel's nested runtime supplies these packages in Forge's game module layer.
+    minecraft.dependencies.withType(ExternalModuleDependency).configureEach { dependency ->
+        dependency.exclude group: 'org.jetbrains', module: 'annotations'
+    }
 }
 
 minecraft {
@@ -139,12 +143,13 @@ repositories {
 dependencies {
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly 'org.jetbrains:annotations:24.0.1'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
     /*
-    * Compile baseline: Sophisticated Backpacks 3.26.19.2239 +
-    * Sophisticated Core 1.5.26.2457.
+    * Compile baseline: Sophisticated Backpacks 3.26.21.2256 +
+    * Sophisticated Core 1.5.37.2488.
     *
     * Runtime metadata deliberately remains loader-tolerant for optional
     * dependency versions. Functional support is determined by structural
@@ -155,12 +160,12 @@ dependencies {
     * linked-storage generation, whose APIs must remain behind the lazy
     * optional bridge.
     */
-    implementation fg.deobf("maven.modrinth:nmoqTijg:c90my5iF")
-    implementation fg.deobf("maven.modrinth:TyCTlI4b:VjliRs3R")
-    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:S0AtW2W5")
+    implementation fg.deobf("maven.modrinth:nmoqTijg:lg9huR0q")
+    implementation fg.deobf("maven.modrinth:TyCTlI4b:gKcE0zFj")
+    runtimeOnly fg.deobf("maven.modrinth:hMlaZH8f:ggHmyFPj")
 
 
-    implementation fg.deobf("maven.modrinth:SzzJttH8:QGCbNkTy")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:9623132")
     implementation fg.deobf("curse.maven:create-storage-neo-forge-1281770:8712044")
     // Create Storage requires Create 6.0.7+. Release-equivalent development artifacts.
     implementation(fg.deobf("com.simibubi.create:create-1.20.1:6.0.8-289:slim") { transitive = false })
@@ -170,7 +175,7 @@ dependencies {
     runtimeOnly fg.deobf("dev.engine-room.flywheel:flywheel-forge-1.20.1:1.0.6")
     implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
 
-    clientRuntimeOnly fg.deobf("maven.modrinth:kepjj2sy:Ylt5xlzc")
+    clientRuntimeOnly fg.deobf("maven.modrinth:kepjj2sy:NyjIxasR")
     clientRuntimeOnly fg.deobf("curse.maven:leawind-third-person-930880:8602826")
     clientRuntimeOnly fg.deobf("maven.modrinth:LIqveQm1:1.5.0-beta+forge-1.20.1")
 
@@ -178,16 +183,18 @@ dependencies {
     implementation fg.deobf("curse.maven:rhino-416294:6186971")
     implementation fg.deobf("curse.maven:architectury-api-419699:5137938")
 
-    clientRuntimeOnly fg.deobf("maven.modrinth:u6dRKJwZ:6E4ps2ER")
+    clientRuntimeOnly fg.deobf("maven.modrinth:u6dRKJwZ:3ehcytyv")
+    clientRuntimeOnly fg.deobf("maven.modrinth:7tEfOcA7:wcPo3ErK") // MezzConfig, required by JEI
 
     implementation fg.deobf("curse.maven:curios-309927:6418456")
 
     implementation fg.deobf("curse.maven:kiwi-303657:8322142")
 
-    implementation fg.deobf("maven.modrinth:6zGxpbt7:XXnCAMBQ")
-    implementation fg.deobf("curse.maven:beyond-integration-1557405:8868599")
+    implementation fg.deobf("curse.maven:beyond-dimensions-1222890:9380026")
+    runtimeOnly fg.deobf("curse.maven:compixel-1715758:9351023") // Beyond Dimensions, Kotlin included
+    implementation fg.deobf("curse.maven:beyond-integration-1557405:9625818")
 
-    compileOnly fg.deobf("curse.maven:accelerated-rendering-1314021:8448250")
+    compileOnly fg.deobf("curse.maven:accelerated-rendering-1314021:9654346")
     clientRuntimeOnly fg.deobf("maven.modrinth:I7k4B65h:pdLyf9hN")
 
     compileOnly 'org.ow2.asm:asm-tree:9.9.1'

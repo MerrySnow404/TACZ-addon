@@ -29,11 +29,6 @@ public final class ClientPacketDispatch {
         context.enqueueWork(() -> Objects.requireNonNull(receiver, "Client packet receiver not initialized").receive(message));
         context.setPacketHandled(true);
     }
-    public static void handle(AttachmentDetailRuleStatePacket message, Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> Objects.requireNonNull(receiver, "Client packet receiver not initialized").receive(message));
-        context.setPacketHandled(true);
-    }
     public static void handle(LiberateAttachmentStatePacket message, Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> Objects.requireNonNull(receiver, "Client packet receiver not initialized").receive(message));

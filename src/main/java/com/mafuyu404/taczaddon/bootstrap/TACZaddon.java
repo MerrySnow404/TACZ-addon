@@ -5,7 +5,6 @@ import com.mafuyu404.taczaddon.compat.tacz.TaczCompatibility;
 import com.mafuyu404.taczaddon.config.CommonConfig;
 import com.mafuyu404.taczaddon.config.Config;
 import com.mafuyu404.taczaddon.gunsmith.TaczWorkbenchAnchorProvider;
-import com.mafuyu404.taczaddon.network.ServerPolicySync;
 import com.mafuyu404.taczaddon.recipe.ModRecipeSerializers;
 import com.mafuyu404.taczaddon.rule.RuleRegistry;
 import com.mafuyu404.taczaddon.storage.WorkbenchAnchorRegistry;
@@ -21,8 +20,6 @@ public class TACZaddon {
     public TACZaddon(FMLJavaModLoadingContext context) {
         TaczCompatibility.logSummary();
         RuleRegistry.bootstrap();
-        RuleRegistry.bindSync(ServerPolicySync::broadcastAttachmentDetail,
-                ServerPolicySync::broadcastLiberateAttachment);
         NetworkRegistration.register();
         WorkbenchAnchorRegistry.register(
                 new TaczWorkbenchAnchorProvider()

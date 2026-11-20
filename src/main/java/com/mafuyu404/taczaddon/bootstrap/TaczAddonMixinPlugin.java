@@ -35,7 +35,7 @@ public final class TaczAddonMixinPlugin
             String mixinClassName
     ) {
         if (mixinClassName.equals("com.mafuyu404.taczaddon.mixin.beyond.TaczAmmoCacheMixin")) {
-            return BeyondAmmoCacheContract.isSupported();
+            return BeyondAmmoCacheContract.needsSnapshotFix();
         }
         TaczMixinBinding binding =
                 TaczContractRegistry.bindingForMixin(mixinClassName);

@@ -41,7 +41,6 @@ public final class ServerEvent {
 
         ServerPolicySync.sendServerConfig(serverPlayer);
         ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
-        ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
     }
 
     @SubscribeEvent(
@@ -144,7 +143,6 @@ public final class ServerEvent {
             );
             ServerPolicySync.sendServerConfig(serverPlayer);
             ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
-            ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
         }
     }
 
@@ -158,7 +156,6 @@ public final class ServerEvent {
             );
             ServerPolicySync.sendServerConfig(serverPlayer);
             ServerPolicySync.sendLiberateAttachmentState(serverPlayer);
-            ServerPolicySync.sendAttachmentDetailRuleState(serverPlayer);
         }
     }
 

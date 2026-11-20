@@ -11,18 +11,27 @@ import org.objectweb.asm.tree.MethodInsnNode;
 public final class BeyondAmmoCacheContract {
     public static final String CACHE = "com.solr98.beyondintegration.client.TaczAmmoCache";
     private static final String RESOURCE = "(Lnet/minecraft/resources/ResourceLocation;)";
-    private static Boolean supported;
+    private enum CacheLayout { UNKNOWN, LEGACY_SNAPSHOT, MIRROR }
+    private static CacheLayout layout;
 
     private BeyondAmmoCacheContract() {}
 
-    public static synchronized boolean isSupported() {
-        if (supported == null) {
-            supported = supports(ApiShapeProbe.sourceFor(BeyondAmmoCacheContract.class));
+    private static synchronized CacheLayout layout() {
+        if (layout == null) {
+            layout = detect(ApiShapeProbe.sourceFor(BeyondAmmoCacheContract.class));
         }
-        return supported;
+        return layout;
     }
 
-    static boolean supports(ApiShapeProbe.ClassBytes source) {
+    public static boolean isSupported() {
+        return layout() != CacheLayout.UNKNOWN;
+    }
+
+    public static boolean needsSnapshotFix() {
+        return layout() == CacheLayout.LEGACY_SNAPSHOT;
+    }
+
+    private static CacheLayout detect(ApiShapeProbe.ClassBytes source) {
         ApiShapeProbe.Shape shape = ApiShapeProbe.inspect(source, CACHE);
         if (!shape.hasMethod("hasData", RESOURCE + "Z")
                 || !shape.hasMethod("getCount", RESOURCE + "I")
@@ -32,11 +41,11 @@ public final class BeyondAmmoCacheContract {
                 "com.solr98.beyondintegration.feature.ammo.tacz.TaczAmmoExtractor",
                 "getAmmoIdClient", "(Lnet/minecraft/world/item/ItemStack;)"
                         + "Lnet/minecraft/resources/ResourceLocation;")) {
-            return false;
+            return CacheLayout.UNKNOWN;
         }
         ClassNode node = new ClassNode();
         new ClassReader(source.read(CACHE)).accept(node, ClassReader.SKIP_DEBUG);
-        return node.methods.stream().filter(method -> method.name.equals("applyPending")
+        boolean legacy = node.methods.stream().filter(method -> method.name.equals("applyPending")
                 && method.desc.equals("()V")).anyMatch(method -> {
             int matches = 0;
             for (var instruction : method.instructions) {
@@ -50,5 +59,9 @@ public final class BeyondAmmoCacheContract {
             }
             return matches == 1;
         });
+        if (legacy) return CacheLayout.LEGACY_SNAPSHOT;
+        String mirror = "com.solr98.beyondintegration.client.TaczAmmoMirror";
+        return ApiShapeProbe.hasMethod(source, mirror, "getCount", RESOURCE + "I")
+                && shape.hasField("pendingPartial", "Z") ? CacheLayout.MIRROR : CacheLayout.UNKNOWN;
     }
 }

@@ -14,7 +14,6 @@ public final class ClientSyncedConfig {
     private static volatile int batchCraftMax = 1;
 
     private static volatile boolean liberateAttachment = false;
-    private static volatile boolean showAttachmentDetail = false;
 
     /*
      * Fail closed. A previous server's value must never authorize client
@@ -62,16 +61,7 @@ public final class ClientSyncedConfig {
         return liberateAttachment;
     }
 
-    public static void setShowAttachmentDetail(boolean enabled) {
-        showAttachmentDetail = enabled;
-    }
-
-    public static boolean showAttachmentDetail() {
-        return showAttachmentDetail;
-    }
-
     public static void resetToSafeDefaults() {
-        showAttachmentDetail = false;
         batchCraftMax = 1;
         enableShootWhileReloading = false;
         enableFastSwapGun = false;

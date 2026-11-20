@@ -1,6 +1,5 @@
 package com.mafuyu404.taczaddon.mixin.tacz.v1_1_8;
 
-import com.mafuyu404.taczaddon.client.config.ClientSyncedConfig;
 import com.mafuyu404.taczaddon.client.refit.AttachmentTooltipDiffService;
 import com.mafuyu404.taczaddon.config.Config;
 
@@ -72,7 +71,7 @@ public class ClientAttachmentItemTooltipMixin {
             AttachmentItemTooltip tooltip,
             CallbackInfo ci
     ) {
-        if (!taczaddon$attributeDetailEnabled()) {
+        if (!Config.SHOW_ATTACHMENT_ATTRIBUTE.get()) {
             return;
         }
 
@@ -127,18 +126,6 @@ public class ClientAttachmentItemTooltipMixin {
 
         this.components.clear();
         this.components.addAll(transformed);
-    }
-
-    /**
-     * Single entry gate for the enhanced attachment tooltip.
-     *
-     * The client preference must be enabled by the player and the server must
-     * run with {@code /gamerule showAttachmentDetail true}; both are required.
-     */
-    @Unique
-    private static boolean taczaddon$attributeDetailEnabled() {
-        return Config.SHOW_ATTACHMENT_ATTRIBUTE.get()
-                && ClientSyncedConfig.showAttachmentDetail();
     }
 
     @Unique

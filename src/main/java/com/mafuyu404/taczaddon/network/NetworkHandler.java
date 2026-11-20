@@ -23,7 +23,7 @@ public final class NetworkHandler {
      * formats changed, so the protocol changed again while every packet ID
      * stayed in place.
      */
-    private static final String PROTOCOL = "2.12";
+    private static final String PROTOCOL = "2.13";
 
     public static final SimpleChannel CHANNEL =
             NetworkRegistry.newSimpleChannel(
