@@ -1,7 +1,6 @@
 package com.mafuyu404.taczaddon.mixin;
 
 import com.mafuyu404.taczaddon.config.ClientConfig;
-import com.mafuyu404.taczaddon.config.ClientRuleState;
 import com.mojang.logging.LogUtils;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAttachment;
@@ -90,8 +89,7 @@ public class ClientAttachmentItemTooltipMixin {
             remap = false,
             require = 1)
     private void taczaddon$enhanceAttachmentDetail(CallbackInfo ci) {
-        if (!ClientConfig.SHOW_ATTACHMENT_ATTRIBUTE.get()
-                || !ClientRuleState.isShowAttachmentDetail()) {
+        if (!ClientConfig.SHOW_ATTACHMENT_ATTRIBUTE.get()) {
             return;
         }
 

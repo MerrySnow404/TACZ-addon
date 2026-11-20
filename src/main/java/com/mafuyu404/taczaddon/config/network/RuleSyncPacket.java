@@ -10,7 +10,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record RuleSyncPacket(boolean liberateAttachment, boolean showAttachmentDetail)
+public record RuleSyncPacket(boolean liberateAttachment)
         implements CustomPacketPayload {
     public static final Type<RuleSyncPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(TACZaddon.MODID, "rule_sync"));
@@ -18,15 +18,10 @@ public record RuleSyncPacket(boolean liberateAttachment, boolean showAttachmentD
             StreamCodec.composite(
                     ByteBufCodecs.BOOL,
                     RuleSyncPacket::liberateAttachment,
-                    ByteBufCodecs.BOOL,
-                    RuleSyncPacket::showAttachmentDetail,
                     RuleSyncPacket::new);
 
     public static void handle(RuleSyncPacket msg, IPayloadContext context) {
-        context.enqueueWork(
-                () ->
-                        ClientRuleState.setRuleState(
-                                msg.liberateAttachment, msg.showAttachmentDetail));
+        context.enqueueWork(() -> ClientRuleState.setLiberateAttachment(msg.liberateAttachment()));
     }
 
     @Override

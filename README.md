@@ -28,7 +28,7 @@ TaCZ 的附属模组，本分支适用于 NeoForge，提供枪械工作台、配
 
 - 可指定对配件按SHIFT时展示的支持枪械数量，避免遮挡屏幕与卡顿。
 
-- 新增游戏规则showAttachmentDetail，开启后可显示配件对当前手持枪械造成的详细属性变化。
+- 客户端配置项 `enableAttachmentDetail` 控制是否显示配件对主手枪械的详细属性变化，默认开启。
 
 - 增强配件属性Tooltip，同时保留TaCZ原有的其他Tooltip内容。
 

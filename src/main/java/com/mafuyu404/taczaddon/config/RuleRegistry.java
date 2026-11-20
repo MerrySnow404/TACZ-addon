@@ -13,10 +13,4 @@ public class RuleRegistry {
             GameRules.register(
                     "liberateAttachment",
                     GameRules.Category.PLAYER,
-                    GameRules.BooleanValue.create(false, VirtualAttachmentRules::onRuleChange));
-    public static final GameRules.Key<GameRules.BooleanValue> SHOW_ATTACHMENT_DETAIL =
-            GameRules.register(
-                    "showAttachmentDetail",
-                    GameRules.Category.PLAYER,
-                    GameRules.BooleanValue.create(false, VirtualAttachmentRules::onRuleChange));
-}
+                    GameRules.BooleanValue.create(false, VirtualAttachmentRules::onRuleChange));}

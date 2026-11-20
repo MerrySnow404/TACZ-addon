@@ -153,10 +153,7 @@ public final class VirtualAttachmentRules {
         boolean liberateAttachment =
                 player.level().getGameRules().getBoolean(RuleRegistry.LIBERATE_ATTACHMENT);
 
-        boolean showAttachmentDetail =
-                player.level().getGameRules().getBoolean(RuleRegistry.SHOW_ATTACHMENT_DETAIL);
-
-        return new RuleSyncPacket(liberateAttachment, showAttachmentDetail);
+        return new RuleSyncPacket(liberateAttachment);
     }
 
     public static Optional<ItemStack> findAttachmentStack(ResourceLocation attachmentId) {

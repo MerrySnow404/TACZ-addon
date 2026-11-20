@@ -84,16 +84,7 @@ public final class ClientConfig {
 
         SHOW_ATTACHMENT_ATTRIBUTE =
                 BUILDER.comment(
-                                "Show detailed attachment stat changes in "
-                                        + "attachment tooltips.",
-                                "This requires both the client option and the "
-                                        + "server showAttachmentDetail gamerule.",
-                                "The main hand must also hold a gun that accepts "
-                                        + "the attachment.",
-                                "The server rule defaults to true and is "
-                                        + "authoritative; server operators can "
-                                        + "disable detail tooltips with "
-                                        + "/gamerule showAttachmentDetail false.")
+                                "Show detailed attachment stat changes for compatible guns held in the main hand.")
                         .define("enableAttachmentDetail", true);
 
         BUILDER.pop();
